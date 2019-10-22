@@ -1,0 +1,19 @@
+{
+  "name": "vk-crx",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "try to do something for better",
+  "browser_action": {
+    "default_icon": "./static/logo.png",
+    "default_title": "have a nice coding",
+    "default_popup": "index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/base.js", "js/importBtn.js", "js/runNowBtn.js", "js/index.js"],
+      "css": ["static/css/index.css"],
+      "run_at": "document_start"
+    }
+  ]
+}
