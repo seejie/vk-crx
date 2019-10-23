@@ -1,13 +1,13 @@
 
 // selector
-// 使用箭头函数this指向会丢失
+// 'this' will be lost when using arraw function
 const _qs = function (selector) {
   const $el = this.document.querySelectorAll(selector)
   if ($el.length !== 1) return $el
   return $el[0]
 }
 
-// 
+// createElement abbr.
 const _cE = el => document.createElement(el)
 
 // ajax
@@ -32,3 +32,21 @@ NodeList.prototype.toArray = function () {
   return Node2Arr(this)
 }
 
+// find siblings with index
+Node.prototype.siblings = function (idx) {
+  return this.parentNode.children[idx]
+}
+
+// black hole
+// build a black hole using by 'src' and through back
+const _blackHole = (src, through) => {
+  const iframe = _cE('iframe')
+  iframe.src = src
+  iframe.className = 'blackhole'
+  iframe.style.display = 'none'
+  document.body.appendChild(iframe)
+  iframe.onload = _ => {
+    through(iframe.contentWindow)
+    document.body.removeChild(iframe)
+  }
+}

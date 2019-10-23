@@ -39,14 +39,9 @@ const weeklyReport = {
     return _qs('#breadcrumbs a').toArray().find(el=>el.innerText.includes('周报'))
   },
   _initDependency: function (cb) {
-    const iframe = _cE('iframe')
-    iframe.src = this._data.tempUrl
-    iframe.style.display = 'none'
-    document.body.appendChild(iframe)
-    iframe.onload = _ => {
-      cb(_qs.bind(iframe.contentWindow)('#main-content').innerHTML)
-      document.body.removeChild(iframe)
-    }
+    _blackHole(this._data.tempUrl, win => {
+      cb(_qs.bind(win)('#main-content').innerHTML)
+    })
   },
   init: function () {
     if (!this._inContext()) return
