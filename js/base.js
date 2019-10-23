@@ -45,8 +45,5 @@ const _blackHole = (src, through) => {
   iframe.className = 'blackhole'
   iframe.style.display = 'none'
   document.body.appendChild(iframe)
-  iframe.onload = _ => {
-    through(iframe.contentWindow)
-    document.body.removeChild(iframe)
-  }
+  iframe.onload = _ => through(iframe.contentWindow, _ => document.body.removeChild(iframe))
 }

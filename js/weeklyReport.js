@@ -39,8 +39,9 @@ const weeklyReport = {
     return _qs('#breadcrumbs a').toArray().find(el=>el.innerText.includes('周报'))
   },
   _initDependency: function (cb) {
-    _blackHole(this._data.tempUrl, win => {
+    _blackHole(this._data.tempUrl, (win, destroy) => {
       cb(_qs.bind(win)('#main-content').innerHTML)
+      destroy()
     })
   },
   init: function () {
