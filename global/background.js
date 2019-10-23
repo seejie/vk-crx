@@ -12,6 +12,9 @@ const time2WriteReport = _ => {
       title: '60分钟后再提示'
     }]
   })
+  chrome.notifications.onClicked.addListener(_ => {
+    window.open('http://wiki.vipkid.com.cn/pages/viewpage.action?pageId=81141120')
+  })
   chrome.notifications.onButtonClicked.addListener((id, index) => {
     const time = index ? 60 : 30
     const timer = setTimeout(_ => {
@@ -21,7 +24,7 @@ const time2WriteReport = _ => {
   })
 }
 
-const friday = 5 
+const friday = 5
 if (new Date().getDay() === friday) {
   const clock = new Date()
   clock.setHours(17)
