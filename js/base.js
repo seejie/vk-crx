@@ -1,10 +1,14 @@
+
 // selector
-const _qs = (selector, doc) => {
-  doc = doc || document
-  const $el = doc.querySelectorAll(selector)
+// 使用箭头函数this指向会丢失
+const _qs = function (selector) {
+  const $el = this.document.querySelectorAll(selector)
   if ($el.length !== 1) return $el
   return $el[0]
 }
+
+// 
+const _cE = el => document.createElement(el)
 
 // ajax
 const _ajax = options => {
@@ -22,6 +26,7 @@ const _ajax = options => {
 const Node2Arr = (nodes) => {
   return [].slice.call(nodes)
 }
+
 // toArray
 NodeList.prototype.toArray = function () {  
   return Node2Arr(this)

@@ -9,25 +9,24 @@ const runNowBtn = {
       return `http://${this.host}/Ins/BizSvcMethod/ExecBizSvcMethod/`
     },
   },
-  _injectDom: function (doc) {
-    const dom = doc.createElement('a')
+  _injectDom: function (win) {
+    const dom = _cE('a')
     dom.id = 'runNow'
     dom.className = 'btn mini purple thickbox'
     dom.href = 'javascript:void(0)'
     dom.innerText = '立即运行'
-    const trs = _qs('#mainForm table tr', doc)
+    const trs = _qs.bind(win)('#mainForm table tr')
     const index = Node2Arr(trs).findIndex(el=>el.children[1].innerText === 'KPI_流程发起')
     trs[index].children[4].appendChild(dom)
   },
-  _initEvent: function (doc) {
-    const _this = this
-    _qs('#runNow', doc).onclick = _ => {
+  _initEvent: function (win) {
+    _qs.bind(win)('#runNow').onclick = _ => {
       const fd = new FormData()
-      fd.append('methodId', _this._data.methodId())
+      fd.append('methodId', this._data.methodId())
       fd.append('paramsJson', JSON.stringify([{paramName: '1', paramValue: '1'}]))
 
       _ajax({
-        url: _this._data.api() + _this._data.methodId(),
+        url: this._data.api() + this._data.methodId(),
         type: 'POST',
         data: fd,
         success: function (res) {
@@ -38,17 +37,16 @@ const runNowBtn = {
   },
   _inContext: _ => location.pathname === '/Sys/auth/Index' && /t|u/.test(location.hostname[0]),
   _initDependency: function () {
-    const _this = this
     _qs('#sideMenu').onclick = e => {
       if (e.target.innerText !== '服务方法') return
       const iframes = _qs('.tab-content iframe')
       const index = iframes.toArray().findIndex(el=>el.src.includes('BizSvcCategory'))
-      const targetIframe = iframes[index]
-      targetIframe.onload = _ => {
-        const win = targetIframe.contentWindow
-        _this._data.host = win.location.host
-        _this._injectDom(win.document)
-        _this._initEvent(win.document)
+      const iframe = iframes[index]
+      iframe.onload = _ => {
+        const win = iframe.contentWindow
+        this._data.host = win.location.host
+        this._injectDom(win)
+        this._initEvent(win)
       }
     }
   },
