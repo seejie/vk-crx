@@ -1,5 +1,5 @@
 const init = _ => {
-  importBtn.init()
+  weeklyReport.init()
   runNowBtn.init()
 }
 
