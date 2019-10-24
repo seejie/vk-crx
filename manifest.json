@@ -11,7 +11,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["js/base.js", "js/weeklyReport.js", "js/runNowBtn.js", "js/index.js"],
+      "js": ["js/base.js", "js/weeklyReport.js", "js/runNowBtn.js", "js/gitlab.js", "js/index.js"],
       "css": ["static/css/index.css"],
       "run_at": "document_start"
     }

@@ -8,7 +8,7 @@ const weeklyReport = {
     const title = _qs('#content-title')
     const date = new Date()
     date.setDate(date.getDate() + Math.abs(date.getDay() - 5))
-    const name = _qs('#breadcrumbs li:last-child a').innerText
+    const name = _qs('#breadcrumbs li:last-child a').text()
     const input = `${name}-${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
     title.value = input
   },
@@ -16,14 +16,14 @@ const weeklyReport = {
   _importReportTemp: _ => {
     const toolbar = _qs('.aui-toolbar2-primary.toolbar-primary')
     const dom = _cE('ul')
-    dom.className = 'aui-buttons rte-toolbar-group-task-lists'
-    dom.innerHTML = `         
-      <li class="toolbar-item aui-button aui-button-subtle" id="rte-button-import">
-        <a class="toolbar-trigger" href="#" data-control-id="import">
-          <span>导入模板</span>
-        </a>
-      </li>
-    `
+      .class('aui-buttons rte-toolbar-group-task-lists')
+      .html( `         
+        <li class="toolbar-item aui-button aui-button-subtle" id="rte-button-import">
+          <a class="toolbar-trigger" href="#" data-control-id="import">
+            <span>导入模板</span>
+          </a>
+        </li>
+      `)
     toolbar.appendChild(dom)
   },
   _injectDom: function () {
@@ -32,11 +32,11 @@ const weeklyReport = {
   },
   _initEvent: function () {
     const editor = _qs.bind(_qs('#wysiwygTextarea_ifr').contentWindow)('#tinymce')
-    _qs('#rte-button-import a').onclick = _ => this._initDependency(html => editor.innerHTML = html)
+    _qs('#rte-button-import a').onclick = _ => this._initDependency(html => editor.html(html))
   },
   _inContext: _ => {
     if (!location.pathname.includes('resumedraft')) return false
-    return _qs('#breadcrumbs a').toArray().find(el=>el.innerText.includes('周报'))
+    return _qs('#breadcrumbs a').toArray().find(el=>el.text().includes('周报'))
   },
   _initDependency: function (cb) {
     _blackHole(this._data.tempUrl, (win, destroy) => {

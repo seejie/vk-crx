@@ -18,11 +18,14 @@ const _ajax = options => {
     http.send(options.type ? options.data : null)
     http.onreadystatechange = _ => {
       if (http.readyState !== 4 || !/200/.test(http.status)) return
-      options.success && options.success(JSON.parse(http.response))
+      if (options.success) {
+        const res = options.dataType ? http.response : JSON.parse(http.response)
+        options.success(res)
+      }
     }
 }
 
-// toArray
+// toArray use for node in iframe
 const Node2Arr = (nodes) => {
   return [].slice.call(nodes)
 }
@@ -32,18 +35,100 @@ NodeList.prototype.toArray = function () {
   return Node2Arr(this)
 }
 
-// find siblings with index
-Node.prototype.siblings = function (idx) {
-  return this.parentNode.children[idx]
+// toArray
+HTMLCollection.prototype.toArray = function () {
+  return Node2Arr(this)
 }
 
+// find parentNode using by
+// the number of closest generation or the name in family tree
+Node.prototype.parent = function (key) {
+  let father = this.parentNode
+  if (typeof key !== 'string') {
+    if (!key) return father
+    while (key !== 0 && father) {
+      father = father.parentNode
+      key--
+    }
+    return father
+  } else {
+    const attr = key[0] === '.'
+      ? 'className'
+      : key[0] === '#'
+        ? 'id' : 'tagName'
+    while (father && father !== document) {
+      const reg = new RegExp(key.replace(/\.|\#/g, ''), 'i')
+      if (reg.test(father[attr])) return father
+      father = father.parentNode
+    }
+    return null
+  }
+}
+
+// find childNode using by the rank or the name in family
+Node.prototype.child = function (key) {
+  if (typeof key !== 'string') {
+    return this.children[key || 0]
+  } else {
+    const attr = key[0] === '.'
+      ? 'className'
+      : key[0] === '#'
+        ? 'id' : 'tagName'
+    return this.children.toArray().find(el=>{
+      const reg = new RegExp(key.replace(/\.|\#/g, ''), 'i')
+      return reg.test(el[attr])
+    })
+  }
+}
+
+// find siblings using by the rank in family
+Node.prototype.siblings = function (idx) {
+  return this.parent().child(idx)
+}
+
+// get/set attrs
+Node.prototype.attrs = function (attr, args) {
+  return args ? (this[attr] = args) && this : this[attr]
+}
+
+// get/set innerHTML
+Node.prototype.html = function (args) {
+  return this.attrs('innerHTML', args)
+}
+
+// get/set innerText
+Node.prototype.text = function (args) {
+  return this.attrs('innerText', args)
+}
+
+// get/set class name
+Node.prototype.class = function (args) {
+  return this.attrs('className', args)
+}
+
+// add new class name
+Node.prototype.addClass = function (name) {
+  return (this.class(`${this.class()} ${name}`)) && this
+}
+
+// hide
+Node.prototype.hide = function () {
+  return (this.style.display = 'none') && this
+}
+
+// dataset
+Node.prototype.data = function (attr, args) {
+  return args ? (this.dataset[attr] = args) && this : this.dataset[attr]
+}
+
+// crawler find specify dom
+
 // black hole
-// build a black hole using by 'src' and through back
+// build a black hole using by the 'src' and through back
 const _blackHole = (src, through) => {
   const iframe = _cE('iframe')
   iframe.src = src
-  iframe.className = 'blackhole'
-  iframe.style.display = 'none'
+  iframe.class('blackhole').hide()
   document.body.appendChild(iframe)
   iframe.onload = _ => through(iframe.contentWindow, _ => document.body.removeChild(iframe))
 }
