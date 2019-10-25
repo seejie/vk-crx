@@ -14,7 +14,32 @@ const gitlab = {
     
     return dom.html(html)
   },
-  _initDom: function () {
+  _initParentNode: function (currNode, src) {
+    const root = _qs('.projTree-view')
+    const father = _qs('#tree-slider tr:first-child td:first-child')
+    if (!src && father.child('i')) return root.appendChild(currNode)
+    const src = src || father.child('a').href
+    
+    const _this = this
+    _ajax({
+      url: src,
+      dataType: 'html',
+      success: function (res) {
+        const html = /<tr([\w\W]*)<\/tr>/.exec(res)[0]
+        const table = _cE('table').html(html).hide().attrs('id', 'temporary')
+        _qs('body').appendChild(table)
+        const data = _this._initData('#temporary td:first-child')
+        const elders = _this._initFileList(data)
+        const parent = elders.children.toArray().find(el=>el.child('a').data('src') === location.href)
+        parent.appendChild(currNode)
+        const grandParentSrc = parent.child('a').data('src')
+        console.log(parent.child('a').data('src'), '-----2-----')
+        // root.appendChild(elders)
+        _this._initParentNode(parent, grandParentSrc)
+      }
+    })
+  },
+  _initCurrNode: function () {
     const dom = _cE('div').class('projTree')
     const html = _ => {
       return `
@@ -29,7 +54,10 @@ const gitlab = {
     }
     _qs('body').appendChild(dom.html(html()))
     const data = this._initData('#tree-slider td:first-child')
-    _qs('.projTree-view').appendChild(this._initFileList(data))
+    return this._initFileList(data)
+  },
+  _initDom: function () {
+    this._initParentNode(this._initCurrNode(), false)
   },
   _initCss: _ => {
     const style = _cE('style')
@@ -80,8 +108,9 @@ const gitlab = {
     _qs('.projTree').onclick = e => {
       const target = e.target
       if (!target.class().includes('isFolder')) return
-      const src = target.parent().data('src')
+      const src = target.parent('a').data('src')
       const _this = this
+
       _ajax({
         url: src,
         dataType: 'html',
@@ -91,14 +120,18 @@ const gitlab = {
           table.html(html).hide().attrs('id', 'temporary')
           _qs('body').appendChild(table)
           const data = _this._initData('#temporary td:first-child')
-          target.parent('li').appendChild(_this._initFileList(data))
+          const li = target.parent('li')
+          // todo
+          let ul = li.child('ul')
+          ul = ul ? ul : li.appendChild(_this._initFileList(data)).hide()
+          ul.isHide() && ul.show() || ul.hide()
           _qs('body').removeChild(table)
         }
       })
     }
   },
   _initData: el => {
-    return _qs(el).toArray().filter(el=>el.children.length > 1).map(el=>el.cloneNode(true))
+    return _qs(el).toArray().filter(el=>el.child('i')).map(el=>el.cloneNode(true))
   },
   _inContext: _ => location.hostname === 'code.vipkid.com.cn',
   init: function () {

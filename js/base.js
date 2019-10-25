@@ -66,6 +66,7 @@ Node.prototype.parent = function (key) {
 }
 
 // find childNode using by the rank or the name in family
+// always return one child even though they are many
 Node.prototype.child = function (key) {
   if (typeof key !== 'string') {
     return this.children[key || 0]
@@ -114,6 +115,20 @@ Node.prototype.addClass = function (name) {
 // hide
 Node.prototype.hide = function () {
   return (this.style.display = 'none') && this
+}
+
+// show
+Node.prototype.show = function (type) {
+  if (!type) {
+    this.style.display = /div|p|ul/i.test(this.tagName) ? 'block' : 'inline'
+  } else {
+    this.style.display = type
+  }
+  return this
+}
+
+Node.prototype.isHide = function () {
+  return this.style.display === 'none'
 }
 
 // dataset
