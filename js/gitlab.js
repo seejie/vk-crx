@@ -19,7 +19,13 @@ const gitlab = {
   // currSrc using for find parent in parents
   _initParentNode: function (currNode, parentSrc, currSrc) {
     const root = _qs('.projTree-view')
-    if (!parentSrc) return root.appendChild(currNode)
+    if (!parentSrc) {
+      root.innerHTML = ''
+      root.appendChild(currNode)
+      const selectedNode = _qs(`.projTree-content a[href="${location.pathname}"]`)
+      !selectedNode.length === 0 && selectedNode.parent('li').class('actived')
+      return
+    } 
 
     const _this = this
     _ajax({
@@ -37,7 +43,7 @@ const gitlab = {
         const elders = _this._initFileList(data)
         const parent = elders.children.toArray().find(el=>el.child('a').data('src') === currSrc)
 
-        parent.appendChild(currNode)
+        currNode && parent.appendChild(currNode)
         _this._initParentNode(elders, grandParent && grandParent.href, parentSrc)
         _qs('body').removeChild(table)
       }
@@ -45,22 +51,29 @@ const gitlab = {
   },
   _initTreeWrapper: function () {
     const dom = _cE('div').class('projTree')
+    _qs('body').appendChild(dom)
     const inner = _ => {
       return `
-        <div class="projTree-header">
-          <span>{projectName}</span>
-          <span> / </span>
-          <span>{branchName}</span>
+        <div class="projTree-wrapper">
+          <div class="projTree-header">
+            <span>${_qs('.project-item-select-holder').txt()}</span>
+            <span> / </span>
+            <span>${_qs('.dropdown-toggle-text').txt()}</span>
+          </div>
+          <div class="projTree-view">
+            <div>加载中<span class="dotload">...</span></div>
+          </div>
+          <div class="projTree-footer">🤪 hava a nice coding</div>
         </div>
-        <div class="projTree-view">
-        </div>
+        <div class="projTree-switchBtn">What's Up</div>
       `
-    }
-    _qs('body').appendChild(dom.html(inner()))
+    } 
+    dom.html(inner())
+    this._initEvent()
   },
   // find parent href using by breadcrumb
-  _findParentHref: _ => {
-    return _qs('.breadcrumb > li:nth-last-child(3) a').href
+  _findParentHref: isLeafNode => {
+    return _qs(`.breadcrumb > li:nth-last-child(${isLeafNode ? 2 : 3}) a`).href
   },
   _initData: el => {
     return _qs(el).toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true))
@@ -68,7 +81,7 @@ const gitlab = {
   _initDom: function () {
     this._initTreeWrapper()
     const currNode = this._initFileList(this._initData('#tree-slider td:first-child'))
-    this._initParentNode(currNode, this._findParentHref(), location.href)
+    this._initParentNode(currNode, this._findParentHref(!currNode), location.href)
   },
   _initCss: _ => {
     const style = _cE('style')
@@ -83,23 +96,36 @@ const gitlab = {
           position: fixed;
           top: 0;
           left: 0;
+          display: flex;
           height: 100%;
-          width: 232px;
-          background: #ffffff;
+          background: transparent;
           z-index: 1000000001;
-          border-right: 1px solid #e5e5e5;
+          overflow: hidden;
+          transition: left 0.5s ease 0s;
+        }
+        .projTree-wrapper{
+          height: 100%;
+          background:#fff;
+          width: 0;
+          overflow: hidden;
+          transition: width 0.3s ease-in 0s;
         }
         .projTree-header{
           height: 51px;
           background: #fafafa;
+          border-right: 1px solid #e5e5e5;
           border-bottom: 1px solid #e5e5e5;
           line-height: 51px;
           padding: 0 10px !important;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .projTree-view{
           padding: 10px;
           height: calc(100% - 52px);
           overflow: scroll;
+          border-right: 1px solid #e5e5e5;
         }
         .projTree-content{
           width: 100%;
@@ -108,14 +134,64 @@ const gitlab = {
         .projTree-content .str-truncated {
           width: 100%;
         }
+        .projTree-content .str-truncated:hover {
+          background: #f5f5f5;
+        }
+        .projTree-content li.actived .str-truncated{
+          color: red;
+          text-decoration: underline;
+        }
         .projTree-content .projTree-content{
           padding-left: 22px;
+        }
+        .dotload {
+          display: inline-block;
+          width: 3ch;
+          text-indent: -1ch;
+          vertical-align: bottom;
+          overflow: hidden;
+          animation: dot 1s infinite step-start both;
+          font-family: Consolas, Monaco, monospace;
+        }
+        @keyframes dot {
+          33% { text-indent: 0; }
+          66% { text-indent: -2ch; }
+        }
+        .projTree-footer{
+          position: absolute;
+          bottom: 0;
+          width: 232px;
+          background-color: #fafafa;
+          padding: 5px 10px;
+          text-align: center;
+          border-right: 1px solid #e5e5e5;
+        }
+        .projTree-switchBtn{
+          cursor: pointer;
+          height: 100px;
+          margin: auto;
+          text-align: center;
+          transform: rotate(-180deg);
+          writing-mode: tb-rl;
+          background-color: #f2f5f7;
+          padding: 8px 0;
+          border: 1px solid #e0e4e7;
+          border-right: 0;
+          box-shadow: rgba(118, 118, 118, 0.11) 2px 0px 5px 0px;
         }
       `
     }
     _qs('head').appendChild(style.html(inner()))
   },
   _initEvent: function () {
+    _qs('body').onmouseover = e => {
+      if (e.target.class() !== 'projTree-switchBtn') return
+      _qs('.projTree-wrapper').style.width = '232px'
+    }
+    _qs('.projTree').onmouseleave = e => {
+      if (e.target.class() !== 'projTree') return
+      _qs('.projTree-wrapper').style.width = '0'
+    }
     _qs('.projTree').onclick = e => {
       const target = e.target
       if (!target.class().includes('isFolder')) return
@@ -143,8 +219,7 @@ const gitlab = {
   _inContext: _ => location.hostname === 'code.vipkid.com.cn',
   init: function () {
     if (!this._inContext()) return
-    this._initDom()
     this._initCss()
-    this._initEvent()
+    this._initDom()
   }
 }

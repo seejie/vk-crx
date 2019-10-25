@@ -26,8 +26,14 @@ const _ajax = options => {
 }
 
 // toArray use for node in iframe
-const Node2Arr = (nodes) => {
+const Node2Arr = nodes => {
   return [].slice.call(nodes)
+}
+
+// not undefined && not null
+// can be '' or 0
+const nil = val => {
+  return val !== undefined && val !== null
 }
 
 // toArray
