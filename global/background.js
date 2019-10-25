@@ -34,6 +34,6 @@ if (new Date().getDay() === friday) {
   const timer = setTimeout(_ => {
     time2WriteReport()
     clearTimeout(timer)
-  }, clock.getTime() - now.getTime())
+  }, clock.getTime() - new Date().getTime())
 }
 

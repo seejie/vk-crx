@@ -1,7 +1,7 @@
 const gitlab = {
   _initFileList: function (arr) {
     const dom = _cE('ul').class('projTree-content')
-    let html = ''
+    let inner = ''
     arr.forEach(el=>{
       if (/fa-folder/.test(el.child().class())) {
         el.child('a')
@@ -9,39 +9,43 @@ const gitlab = {
           .attrs('href', 'javascript:void(0);')
           .child().addClass('isFolder')
       } 
-      html += `<li>${el.html()}</li>`
+      inner += `<li>${el.html()}</li>`
     })
     
-    return dom.html(html)
+    return dom.html(inner)
   },
-  _initParentNode: function (currNode, src) {
+  // currNode using for append
+  // parentSrc using for get parentPage html
+  // currSrc using for find parent in parents
+  _initParentNode: function (currNode, parentSrc, currSrc) {
     const root = _qs('.projTree-view')
-    const father = _qs('#tree-slider tr:first-child td:first-child')
-    if (!src && father.child('i')) return root.appendChild(currNode)
-    const src = src || father.child('a').href
-    
+    if (!parentSrc) return root.appendChild(currNode)
+
     const _this = this
     _ajax({
-      url: src,
+      url: parentSrc,
       dataType: 'html',
       success: function (res) {
-        const html = /<tr([\w\W]*)<\/tr>/.exec(res)[0]
-        const table = _cE('table').html(html).hide().attrs('id', 'temporary')
+        const doc = _cE('document').html(res)
+        const grandParent = doc.querySelector('.breadcrumb > li:nth-last-child(3) a')
+
+        const trs = /<tr([\w\W]*)<\/tr>/.exec(res)[0]
+        const table = _cE('table').html(trs).hide().attrs('id', 'temporary')
         _qs('body').appendChild(table)
+
         const data = _this._initData('#temporary td:first-child')
         const elders = _this._initFileList(data)
-        const parent = elders.children.toArray().find(el=>el.child('a').data('src') === location.href)
+        const parent = elders.children.toArray().find(el=>el.child('a').data('src') === currSrc)
+
         parent.appendChild(currNode)
-        const grandParentSrc = parent.child('a').data('src')
-        console.log(parent.child('a').data('src'), '-----2-----')
-        // root.appendChild(elders)
-        _this._initParentNode(parent, grandParentSrc)
+        _this._initParentNode(elders, grandParent && grandParent.href, parentSrc)
+        _qs('body').removeChild(table)
       }
     })
   },
-  _initCurrNode: function () {
+  _initTreeWrapper: function () {
     const dom = _cE('div').class('projTree')
-    const html = _ => {
+    const inner = _ => {
       return `
         <div class="projTree-header">
           <span>{projectName}</span>
@@ -52,16 +56,23 @@ const gitlab = {
         </div>
       `
     }
-    _qs('body').appendChild(dom.html(html()))
-    const data = this._initData('#tree-slider td:first-child')
-    return this._initFileList(data)
+    _qs('body').appendChild(dom.html(inner()))
+  },
+  // find parent href using by breadcrumb
+  _findParentHref: _ => {
+    return _qs('.breadcrumb > li:nth-last-child(3) a').href
+  },
+  _initData: el => {
+    return _qs(el).toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true))
   },
   _initDom: function () {
-    this._initParentNode(this._initCurrNode(), false)
+    this._initTreeWrapper()
+    const currNode = this._initFileList(this._initData('#tree-slider td:first-child'))
+    this._initParentNode(currNode, this._findParentHref(), location.href)
   },
   _initCss: _ => {
     const style = _cE('style')
-    const html = _ => {
+    const inner = _ => {
       return `
         .projTree * {
           margin: 0;
@@ -102,7 +113,7 @@ const gitlab = {
         }
       `
     }
-    _qs('head').appendChild(style.html(html()))
+    _qs('head').appendChild(style.html(inner()))
   },
   _initEvent: function () {
     _qs('.projTree').onclick = e => {
@@ -115,13 +126,12 @@ const gitlab = {
         url: src,
         dataType: 'html',
         success: function (res) {
-          const html = /<tr([\w\W]*)<\/tr>/.exec(res)[0]
+          const inner = /<tr([\w\W]*)<\/tr>/.exec(res)[0]
           const table = _cE('table')
-          table.html(html).hide().attrs('id', 'temporary')
+          table.html(inner).hide().attrs('id', 'temporary')
           _qs('body').appendChild(table)
           const data = _this._initData('#temporary td:first-child')
           const li = target.parent('li')
-          // todo
           let ul = li.child('ul')
           ul = ul ? ul : li.appendChild(_this._initFileList(data)).hide()
           ul.isHide() && ul.show() || ul.hide()
@@ -129,9 +139,6 @@ const gitlab = {
         }
       })
     }
-  },
-  _initData: el => {
-    return _qs(el).toArray().filter(el=>el.child('i')).map(el=>el.cloneNode(true))
   },
   _inContext: _ => location.hostname === 'code.vipkid.com.cn',
   init: function () {

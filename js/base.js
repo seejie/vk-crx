@@ -98,7 +98,7 @@ Node.prototype.html = function (args) {
 }
 
 // get/set innerText
-Node.prototype.text = function (args) {
+Node.prototype.txt = function (args) {
   return this.attrs('innerText', args)
 }
 

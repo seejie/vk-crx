@@ -8,7 +8,7 @@ const weeklyReport = {
     const title = _qs('#content-title')
     const date = new Date()
     date.setDate(date.getDate() + Math.abs(date.getDay() - 5))
-    const name = _qs('#breadcrumbs li:last-child a').text()
+    const name = _qs('#breadcrumbs li:last-child a').txt()
     const input = `${name}-${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
     title.value = input
   },
@@ -32,11 +32,11 @@ const weeklyReport = {
   },
   _initEvent: function () {
     const editor = _qs.bind(_qs('#wysiwygTextarea_ifr').contentWindow)('#tinymce')
-    _qs('#rte-button-import a').onclick = _ => this._initDependency(html => editor.html(html))
+    _qs('#rte-button-import a').onclick = _ => this._initDependency(inner => editor.innerHTML = inner)
   },
   _inContext: _ => {
     if (!location.pathname.includes('resumedraft')) return false
-    return _qs('#breadcrumbs a').toArray().find(el=>el.text().includes('周报'))
+    return _qs('#breadcrumbs a').toArray().find(el=>el.txt().includes('周报'))
   },
   _initDependency: function (cb) {
     _blackHole(this._data.tempUrl, (win, destroy) => {

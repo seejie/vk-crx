@@ -14,9 +14,9 @@ const runNowBtn = {
       .attrs('id', 'runNow')
       .class('btn mini purple thickbox')
       // .attrs('href', 'javascript:void(0)')
-      .text('立即运行')
+      .txt('立即运行')
     const trs = _qs.bind(win)('#mainForm table tr')
-    const index = Node2Arr(trs).findIndex(el=>el.child(1).text() === 'KPI_流程发起')
+    const index = Node2Arr(trs).findIndex(el=>el.child(1).txt() === 'KPI_流程发起')
     trs[index].child(4).appendChild(dom)
   },
   _initEvent: function (win) {
@@ -38,7 +38,7 @@ const runNowBtn = {
   _inContext: _ => location.pathname === '/Sys/auth/Index' && /t|u/.test(location.hostname[0]),
   _initDependency: function () {
     _qs('#sideMenu').onclick = e => {
-      if (e.target.text() !== '服务方法') return
+      if (e.target.txt() !== '服务方法') return
       const iframes = _qs('.tab-content iframe')
       const index = iframes.toArray().findIndex(el=>el.src.includes('BizSvcCategory'))
       const iframe = iframes[index]
