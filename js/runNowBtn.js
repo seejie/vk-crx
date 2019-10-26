@@ -13,14 +13,14 @@ const runNowBtn = {
     const dom = _cE('a')
       .attrs('id', 'runNow')
       .class('btn mini purple thickbox')
-      // .attrs('href', 'javascript:void(0)')
+      .attrs('href', 'javascript:void(0)')
       .txt('立即运行')
-    const trs = _qs.bind(win)('#mainForm table tr')
+    const trs = _qs('#mainForm table tr', win)
     const index = Node2Arr(trs).findIndex(el=>el.child(1).txt() === 'KPI_流程发起')
     trs[index].child(4).appendChild(dom)
   },
   _initEvent: function (win) {
-    _qs.bind(win)('#runNow').onclick = _ => {
+    _qs('#runNow', win).onclick = _ => {
       const fd = new FormData()
       fd.append('methodId', this._data.methodId())
       fd.append('paramsJson', JSON.stringify([{paramName: '1', paramValue: '1'}]))

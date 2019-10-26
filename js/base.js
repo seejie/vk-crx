@@ -1,8 +1,9 @@
 
 // selector
 // 'this' will be lost when using arraw function
-const _qs = function (selector) {
-  const $el = this.document.querySelectorAll(selector)
+const _qs = function (selector, ctx) {
+  ctx = ctx || document
+  const $el = ctx.querySelectorAll(selector)
   if ($el.length !== 1) return $el
   return $el[0]
 }
@@ -23,6 +24,13 @@ const _ajax = options => {
         options.success(res)
       }
     }
+}
+
+// fetch
+const _http = options => {
+  fetch({
+
+  }).then()
 }
 
 // toArray use for node in iframe
@@ -142,14 +150,24 @@ Node.prototype.data = function (attr, args) {
   return args ? (this.dataset[attr] = args) && this : this.dataset[attr]
 }
 
-// crawler find specify dom
+// wormhole
+// bild a wormhole let crawler find specify content
+const _wormhole = (src, back) => {
+  _ajax({
+    url: src,
+    dataType: 'html',
+    success: function (res) {
+      const inner = /<tr([\w\W]*)<\/tr>/.exec(res)[0]
+
+      _qs('body').removeChild(table)
+    }
+  })
+}
 
 // black hole
 // build a black hole using by the 'src' and through back
 const _blackHole = (src, through) => {
-  const iframe = _cE('iframe')
-  iframe.src = src
-  iframe.class('blackhole').hide()
+  const iframe = _cE('iframe').attrs('src', src).class('blackhole').hide()
   document.body.appendChild(iframe)
-  iframe.onload = _ => through(iframe.contentWindow, _ => document.body.removeChild(iframe))
+  iframe.onload = _ => through(iframe.contentWindow.document, _ => document.body.removeChild(iframe))
 }
