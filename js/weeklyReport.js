@@ -1,4 +1,4 @@
-// 创建周报 => 导入模板、导入上周周报(暂时不做)、快速标题、周报定时提醒(不在此做)
+// 创建周报 => 导入模板、预览上周周报(暂时不做)、快速标题、周报定时提醒(不在此做)
 const weeklyReport = {
   _data: {
     tempUrl: 'http://wiki.vipkid.com.cn/pages/viewpage.action?pageId=81139554'
@@ -7,12 +7,13 @@ const weeklyReport = {
   _autoCreateTitle: _ => {
     const title = _qs('#content-title')
     const date = new Date()
-    date.setDate(date.getDate() + Math.abs(date.getDay() - 5))
+    const offset = [4, 3, 2, 1, 0, 6, 5]
+    date.setDate(date.getDate() + offset[date.getDay()])
     const name = _qs('#breadcrumbs li:last-child a').txt()
     const input = `${name}-${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
     title.value = input
   },
-   // 导入模板、导入上周周报
+   // 导入模板、预览上周周报
   _importReportTemp: _ => {
     const toolbar = _qs('.aui-toolbar2-primary.toolbar-primary')
     const dom = _cE('ul')
