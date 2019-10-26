@@ -1,7 +1,9 @@
-const init = _ => {
+// waiting for iframe
+window.onload = _ => {
   weeklyReport.init()
   runNowBtn.init()
-  gitlab.init()
 }
 
-window.onload = _ => init()
+document.addEventListener('DOMContentLoaded', _ => {
+  gitlab.init()
+})

@@ -49,12 +49,17 @@ const gitlab = {
       }
     })
   },
-  _initTreeWrapper: function () {
-    const dom = _cE('div').class('projTree')
-    _qs('body').appendChild(dom)
+  // find parent href using by breadcrumb
+  _findParentHref: isLeafNode => {
+    return _qs(`.breadcrumb > li:nth-last-child(${isLeafNode ? 2 : 3}) a`).href
+  },
+  _initData: el => {
+    return _qs(el).toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true))
+  },
+  _initDom: function () {
+    const dom = _cE('div').class('projTree-wrapper')
     const inner = _ => {
       return `
-        <div class="projTree-wrapper">
           <div class="projTree-header">
             <span>${_qs('.project-item-select-holder').txt()}</span>
             <span> / </span>
@@ -64,24 +69,10 @@ const gitlab = {
             <div>加载中<span class="dotload">...</span></div>
           </div>
           <div class="projTree-footer">🤪 hava a nice coding</div>
-        </div>
-        <div class="projTree-switchBtn">What's Up</div>
       `
     } 
     dom.html(inner())
-    this._initEvent()
-  },
-  // find parent href using by breadcrumb
-  _findParentHref: isLeafNode => {
-    return _qs(`.breadcrumb > li:nth-last-child(${isLeafNode ? 2 : 3}) a`).href
-  },
-  _initData: el => {
-    return _qs(el).toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true))
-  },
-  _initDom: function () {
-    this._initTreeWrapper()
-    const currNode = this._initFileList(this._initData('#tree-slider td:first-child'))
-    this._initParentNode(currNode, this._findParentHref(!currNode), location.href)
+    _qs('.projTree').insertBefore(dom, _qs('.projTree-switchBtn'))
   },
   _initCss: _ => {
     const style = _cE('style')
@@ -184,10 +175,6 @@ const gitlab = {
     _qs('head').appendChild(style.html(inner()))
   },
   _initEvent: function () {
-    _qs('body').onmouseover = e => {
-      if (e.target.class() !== 'projTree-switchBtn') return
-      _qs('.projTree-wrapper').style.width = '232px'
-    }
     _qs('.projTree').onmouseleave = e => {
       if (e.target.class() !== 'projTree') return
       _qs('.projTree-wrapper').style.width = '0'
@@ -216,10 +203,25 @@ const gitlab = {
       })
     }
   },
+  _beforeCreated: function () {
+    const btn = _cE('div').class('projTree-switchBtn').txt(`What's Up`)
+    const tree = _cE('div').class('projTree')
+    _qs('body').appendChild(tree)
+    tree.appendChild(btn)
+
+    _qs('.projTree').onmouseover = e => {
+      if (e.target.class() !== 'projTree-switchBtn') return
+      _qs('.projTree-wrapper').style.width = '232px'
+      const currNode = this._initFileList(this._initData('#tree-slider td:first-child'))
+      this._initParentNode(currNode, this._findParentHref(!currNode), location.href)
+    }
+  },
   _inContext: _ => location.hostname === 'code.vipkid.com.cn',
   init: function () {
     if (!this._inContext()) return
     this._initCss()
+    this._beforeCreated()
     this._initDom()
+    this._initEvent()
   }
 }
