@@ -1,4 +1,21 @@
-console.log(chrome, '-----chrome-----')
+const chr = chrome
+console.log(chr, '----------')
+const currVersion = chrome.app.getDetails().version
+
+const xhr = new XMLHttpRequest();
+xhr.open("GET", 'https://github.com/seejie/vk-crx/blob/master/manifest.json', true);
+xhr.send();
+xhr.onreadystatechange = function () {
+  if (xhr.readyState === 4 && xhr.status === 200) { 
+    const res = xhr.response
+    const version = /<\/span>(\d+\.\d+)<span class="pl-pds">/.exec(res)[1]
+    if (version > currVersion) {
+      window.open('https://github.com/seejie/vk-crx/archive/master.zip')
+    }
+  }
+}
+
+
 
 const time2WriteReport = _ => {
   chrome.notifications.create(null, {

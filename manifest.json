@@ -20,6 +20,7 @@
     "scripts": ["global/background.js"]
   },
   "permissions": [
-    "notifications"
+    "notifications",
+    "https://github.com/"
   ]
 }
