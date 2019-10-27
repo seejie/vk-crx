@@ -1,10 +1,10 @@
 
 // selector
 // 'this' will be lost when using arraw function
-const _qs = function (selector, ctx) {
+const _qs = (selector, ctx) => {
   ctx = ctx || document
   const $el = ctx.querySelectorAll(selector)
-  if ($el.length !== 1) return $el
+  if ($el.length > 1) return $el
   return $el[0]
 }
 
@@ -157,9 +157,7 @@ const _wormhole = (src, back) => {
     url: src,
     dataType: 'html',
     success: function (res) {
-      const inner = /<tr([\w\W]*)<\/tr>/.exec(res)[0]
-
-      _qs('body').removeChild(table)
+      back(_cE('document').html(res))
     }
   })
 }

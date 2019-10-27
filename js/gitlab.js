@@ -28,26 +28,15 @@ const gitlab = {
       return
     } 
 
-    const _this = this
-    _ajax({
-      url: parentSrc,
-      dataType: 'html',
-      success: function (res) {
-        const doc = _cE('document').html(res)
-        const grandParent = _qs('.breadcrumb > li:nth-last-child(3) a', doc)
+    _wormhole(parentSrc, doc => {
+      const grandParent = _qs('.breadcrumb > li:nth-last-child(3) a', doc)
+      const td = _qs('#tree-slider td:first-child', doc)
+      const data = this._initData(td)
+      const elders = this._initFileList(data)
+      const parent = elders.children.toArray().find(el=>el.child('a').data('src') === currSrc)
 
-        const trs = /<tr([\w\W]*)<\/tr>/.exec(res)[0]
-        const table = _cE('table').html(trs).hide().attrs('id', 'temporary')
-        _qs('body').appendChild(table)
-
-        const data = _this._initData('#temporary td:first-child')
-        const elders = _this._initFileList(data)
-        const parent = elders.children.toArray().find(el=>el.child('a').data('src') === currSrc)
-
-        currNode && parent && parent.appendChild(currNode)
-        _this._initParentNode(elders, grandParent && grandParent.href, parentSrc)
-        _qs('body').removeChild(table)
-      }
+      currNode && parent && parent.appendChild(currNode)
+      this._initParentNode(elders, grandParent && grandParent.href, parentSrc)
     })
   },
   // find parent href using by breadcrumb
@@ -56,7 +45,7 @@ const gitlab = {
     return parent && parent.href
   },
   _initData: el => {
-    return _qs(el) && _qs(el).toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true))
+    return el && el.toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true))
   },
   _initDom: function () {
     const dom = _cE('div').class('projTree-wrapper')
@@ -185,23 +174,14 @@ const gitlab = {
       const target = e.target
       if (!target.class().includes('isFolder')) return
       const src = target.parent('a').data('src')
-      const _this = this
 
-      _ajax({
-        url: src,
-        dataType: 'html',
-        success: function (res) {
-          const inner = /<tr([\w\W]*)<\/tr>/.exec(res)[0]
-          const table = _cE('table')
-          table.html(inner).hide().attrs('id', 'temporary')
-          _qs('body').appendChild(table)
-          const data = _this._initData('#temporary td:first-child')
-          const li = target.parent('li')
-          let ul = li.child('ul')
-          ul = ul ? ul : li.appendChild(_this._initFileList(data)).hide()
-          ul.isHide() && ul.show() || ul.hide()
-          _qs('body').removeChild(table)
-        }
+      _wormhole(src, doc => {
+        const td = _qs('#tree-slider td:first-child', doc)
+        const data = this._initData(td)
+        const li = target.parent('li')
+        let ul = li.child('ul')
+        ul = ul ? ul : li.appendChild(this._initFileList(data)).hide()
+        ul.isHide() && ul.show() || ul.hide()
       })
     }
   },
@@ -214,11 +194,13 @@ const gitlab = {
     _qs('.projTree').onmouseover = e => {
       if (e.target.class() !== 'projTree-switchBtn') return
       _qs('.projTree-wrapper').style.width = '232px'
-      const currNode = this._initFileList(this._initData('#tree-slider td:first-child'))
+      const td = _qs('#tree-slider td:first-child')
+      const currNode = this._initFileList(this._initData(td))
       this._initParentNode(currNode, this._findParentHref(!currNode), location.href)
     }
   },
   _inContext: _ => {
+    if (_qs('li.active').length !== 3) return false
     return /Home|Files/i.test(_qs('li.active')[2].child('a').txt())
   },
   init: function () {
