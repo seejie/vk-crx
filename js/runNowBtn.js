@@ -10,14 +10,12 @@ const runNowBtn = {
     },
   },
   _injectDom: function (win) {
-    const dom = _cE('a')
-      .attrs('id', 'runNow')
-      .class('btn mini purple thickbox')
-      .attrs('href', 'javascript:void(0)')
-      .txt('立即运行')
+    const inner = `
+      <a id="runNow" class="btn mini purple thickbox" href="javascript:void(0)">立即运行</a>
+    `
     const trs = _qs('#mainForm table tr', win)
     const index = Node2Arr(trs).findIndex(el=>el.child(1).txt() === 'KPI_流程发起')
-    trs[index].child(4).appendChild(dom)
+    trs[index].child(4).appendChild(_2dom(inner))
   },
   _initEvent: function (win) {
     _qs('#runNow', win).onclick = _ => {
@@ -35,7 +33,7 @@ const runNowBtn = {
       })
     }
   },
-  _inContext: _ => location.pathname === '/Sys/auth/Index' && /t|u/.test(location.hostname[0]),
+  // _inContext: _ => location.pathname === '/Sys/auth/Index' && /t|u/.test(location.hostname[0]),
   _initDependency: function () {
     _qs('#sideMenu').onclick = e => {
       if (e.target.txt() !== '服务方法') return
@@ -51,7 +49,9 @@ const runNowBtn = {
     }
   },
   init: function () {
-    if (!this._inContext()) return
+    // if (!this._inContext()) return
     this._initDependency()
   }
 }
+
+runNowBtn.init()

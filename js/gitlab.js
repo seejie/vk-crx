@@ -1,3 +1,7 @@
+// the set of first td in per row
+const td1st = '#tree-slider td:first-child'
+// 
+// const 
 const gitlab = {
   _initFileList: function (arr) {
     if (!arr) return
@@ -30,8 +34,7 @@ const gitlab = {
 
     _wormhole(parentSrc, doc => {
       const grandParent = _qs('.breadcrumb > li:nth-last-child(3) a', doc)
-      const td = _qs('#tree-slider td:first-child', doc)
-      const data = this._initData(td)
+      const data = this._initData(_qs(td1st, doc))
       const elders = this._initFileList(data)
       const parent = elders.children.toArray().find(el=>el.child('a').data('src') === currSrc)
 
@@ -48,9 +51,9 @@ const gitlab = {
     return el && el.toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true))
   },
   _initDom: function () {
-    const dom = _cE('div').class('projTree-wrapper')
     const inner = _ => {
       return `
+        <div class="projTree-wrapper">
           <div class="projTree-header">
             <span>${_qs('.project-item-select-holder').txt()}</span>
             <span> / </span>
@@ -60,15 +63,14 @@ const gitlab = {
             <div>加载中<span class="dotload">...</span></div>
           </div>
           <div class="projTree-footer">🤪 hava a nice coding</div>
+        </div>
       `
     } 
-    dom.html(inner())
-    _qs('.projTree').insertBefore(dom, _qs('.projTree-switchBtn'))
+    _qs('.projTree').insertBefore(_2dom(inner()), _qs('.projTree-switchBtn'))
   },
   _initCss: _ => {
-    const style = _cE('style')
-    const inner = _ => {
-      return `
+    _injectCss(`
+      <style>
         .projTree * {
           margin: 0;
           padding: 0;
@@ -161,9 +163,8 @@ const gitlab = {
           border-right: 0;
           box-shadow: rgba(118, 118, 118, 0.11) 2px 0px 5px 0px;
         }
-      `
-    }
-    _qs('head').appendChild(style.html(inner()))
+      </style>
+    `)
   },
   _initEvent: function () {
     _qs('.projTree').onmouseleave = e => {
@@ -176,8 +177,7 @@ const gitlab = {
       const src = target.parent('a').data('src')
 
       _wormhole(src, doc => {
-        const td = _qs('#tree-slider td:first-child', doc)
-        const data = this._initData(td)
+        const data = this._initData(_qs(td1st, doc))
         const li = target.parent('li')
         let ul = li.child('ul')
         ul = ul ? ul : li.appendChild(this._initFileList(data)).hide()
@@ -185,17 +185,18 @@ const gitlab = {
       })
     }
   },
-  _beforeCreated: function () {
-    const btn = _cE('div').class('projTree-switchBtn').txt(`What's Up`)
-    const tree = _cE('div').class('projTree')
-    _qs('body').appendChild(tree)
-    tree.appendChild(btn)
+  _beforeCreate: function () {
+    const dom = `
+      <div class="projTree">
+        <div class="projTree-switchBtn">What's Up</div>
+      </div>
+    `
+    _qs('body').appendChild(_2dom(dom))
 
     _qs('.projTree').onmouseover = e => {
       if (e.target.class() !== 'projTree-switchBtn') return
       _qs('.projTree-wrapper').style.width = '232px'
-      const td = _qs('#tree-slider td:first-child')
-      const currNode = this._initFileList(this._initData(td))
+      const currNode = this._initFileList(this._initData(_qs(td1st)))
       this._initParentNode(currNode, this._findParentHref(!currNode), location.href)
     }
   },
@@ -206,7 +207,7 @@ const gitlab = {
   init: function () {
     if (!this._inContext()) return
     this._initCss()
-    this._beforeCreated()
+    this._beforeCreate()
     this._initDom()
     this._initEvent()
   }

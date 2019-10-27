@@ -18,22 +18,21 @@ const weeklyReport = {
     const toolbar = _qs('.aui-toolbar2-primary.toolbar-primary')
     const inner = _ => {
       return`
-        <li class="toolbar-item aui-button aui-button-subtle" id="rte-button-import">
-        <a class="toolbar-trigger" href="#" data-control-id="import">
-          <span>导入模板</span>
-        </a>
-        </li>
-        <li class="toolbar-item aui-button aui-button-subtle" id="rte-button-view">
-          <a class="toolbar-trigger" href="#" data-control-id="view">
-            <span>预览上周周报</span>
+        <ul class="aui-buttons rte-toolbar-group-task-lists">
+          <li class="toolbar-item aui-button aui-button-subtle" id="rte-button-import">
+          <a class="toolbar-trigger" href="#" data-control-id="import">
+            <span>导入模板</span>
           </a>
-        </li>
+          </li>
+          <li class="toolbar-item aui-button aui-button-subtle" id="rte-button-view">
+            <a class="toolbar-trigger" href="#" data-control-id="view">
+              <span>预览上周周报</span>
+            </a>
+          </li>
+        </ul>
       `
     }
-    const dom = _cE('ul')
-      .class('aui-buttons rte-toolbar-group-task-lists')
-      .html(inner())
-    toolbar.appendChild(dom)
+    toolbar.appendChild(_2dom(inner()))
   },
   _injectDom: function () {
     this._autoCreateTitle()
@@ -52,7 +51,6 @@ const weeklyReport = {
     }
   },
   _inContext: _ => {
-    if (!location.pathname.includes('resumedraft')) return false
     return _qs('#breadcrumbs a').toArray().find(el=>el.txt().includes('周报'))
   },
   init: function () {
@@ -61,3 +59,5 @@ const weeklyReport = {
     this._initEvent()
   }
 }
+
+weeklyReport.init()

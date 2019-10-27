@@ -8,14 +8,16 @@
     "default_title": "have a nice coding",
     "default_popup": "/page/popup.html"
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["js/base.js", "js/weeklyReport.js", "js/runNowBtn.js", "js/gitlab.js", "js/index.js"],
-      "css": ["static/css/index.css"],
-      "run_at": "document_start"
-    }
-  ],
+  "content_scripts": [{
+    "matches": ["http://wiki.vipkid.com.cn/pages/resumedraft.action*"],
+    "js": ["js/base.js", "js/weeklyReport.js"]
+  }, {
+    "matches": ["http://*.vipkid-inc.com/Sys/auth/Index"],
+    "js": ["js/base.js", "js/runNowBtn.js"]
+  }, {
+    "matches": ["https://code.vipkid.com.cn/*"],
+    "js": ["js/base.js", "js/gitlab.js"]
+  }],
   "background":{
     "scripts": ["global/background.js"]
   },

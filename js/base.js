@@ -1,3 +1,5 @@
+// for reuse
+const domParser = new DOMParser()
 
 // selector
 // 'this' will be lost when using arraw function
@@ -6,6 +8,26 @@ const _qs = (selector, ctx) => {
   const $el = ctx.querySelectorAll(selector)
   if ($el.length > 1) return $el
   return $el[0]
+}
+
+// html(string) format to doc node
+const _2doc = html => {
+  return domParser.parseFromString(html,'text/html')
+}
+
+// dom(string) format to dom node
+const _2dom = dom => {
+  return _2doc(dom).body.children[0]
+}
+
+// style(string) format to style node
+const _2Style = style => {
+  return _2doc(style).head
+}
+
+// create and insert css
+const _injectCss = style => {
+  _qs('head').appendChild(_2Style(style))
 }
 
 // createElement abbr.
@@ -156,9 +178,7 @@ const _wormhole = (src, back) => {
   _ajax({
     url: src,
     dataType: 'html',
-    success: function (res) {
-      back(_cE('document').html(res))
-    }
+    success: res => back(_2doc(res))
   })
 }
 
