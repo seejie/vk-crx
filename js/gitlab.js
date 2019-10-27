@@ -1,5 +1,6 @@
 const gitlab = {
   _initFileList: function (arr) {
+    if (!arr) return
     const dom = _cE('ul').class('projTree-content')
     let inner = ''
     arr.forEach(el=>{
@@ -23,7 +24,7 @@ const gitlab = {
       root.innerHTML = ''
       root.appendChild(currNode)
       const selectedNode = _qs(`.projTree-content a[href="${location.pathname}"]`)
-      !selectedNode.length === 0 && selectedNode.parent('li').class('actived')
+      selectedNode && selectedNode.parent('li').class('actived')
       return
     } 
 
@@ -33,7 +34,7 @@ const gitlab = {
       dataType: 'html',
       success: function (res) {
         const doc = _cE('document').html(res)
-        const grandParent = doc.querySelector('.breadcrumb > li:nth-last-child(3) a')
+        const grandParent = _qs('.breadcrumb > li:nth-last-child(3) a', doc)
 
         const trs = /<tr([\w\W]*)<\/tr>/.exec(res)[0]
         const table = _cE('table').html(trs).hide().attrs('id', 'temporary')
@@ -43,7 +44,7 @@ const gitlab = {
         const elders = _this._initFileList(data)
         const parent = elders.children.toArray().find(el=>el.child('a').data('src') === currSrc)
 
-        currNode && parent.appendChild(currNode)
+        currNode && parent && parent.appendChild(currNode)
         _this._initParentNode(elders, grandParent && grandParent.href, parentSrc)
         _qs('body').removeChild(table)
       }
@@ -51,10 +52,11 @@ const gitlab = {
   },
   // find parent href using by breadcrumb
   _findParentHref: isLeafNode => {
-    return _qs(`.breadcrumb > li:nth-last-child(${isLeafNode ? 2 : 3}) a`).href
+    const parent = _qs(`.breadcrumb > li:nth-last-child(${isLeafNode ? 2 : 3}) a`)
+    return parent && parent.href
   },
   _initData: el => {
-    return _qs(el).toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true))
+    return _qs(el) && _qs(el).toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true))
   },
   _initDom: function () {
     const dom = _cE('div').class('projTree-wrapper')
@@ -216,7 +218,9 @@ const gitlab = {
       this._initParentNode(currNode, this._findParentHref(!currNode), location.href)
     }
   },
-  _inContext: _ => location.hostname === 'code.vipkid.com.cn',
+  _inContext: _ => {
+    return /Home|Files/i.test(_qs('li.active')[2].child('a').txt())
+  },
   init: function () {
     if (!this._inContext()) return
     this._initCss()
@@ -225,3 +229,5 @@ const gitlab = {
     this._initEvent()
   }
 }
+
+gitlab.init()

@@ -4,6 +4,3 @@ window.onload = _ => {
   runNowBtn.init()
 }
 
-document.addEventListener('DOMContentLoaded', _ => {
-  gitlab.init()
-})
