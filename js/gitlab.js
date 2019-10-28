@@ -1,7 +1,6 @@
 // the set of first td in per row
 const td1st = '#tree-slider td:first-child'
-// 
-// const 
+
 const gitlab = {
   _initFileList: function (arr) {
     if (!arr) return
@@ -48,6 +47,20 @@ const gitlab = {
     return parent && parent.href
   },
   _initData: el => el && el.toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true)),
+  _initDownload: _ => {
+    const fileBar = _qs('.file-actions.hidden-xs')
+    if (!fileBar) return
+    const icon = `<i aria-hidden="true" data-hidden="true" class="fa fa-download download-icon"></i>`
+    fileBar.insertBefore(_2dom(icon), _qs('.btn-group', fileBar)[0])
+  },
+  _download: (name, content) => {
+    const aLink = _cE('a')
+    const blob = new Blob([content], {type: 'text/plain'})
+    aLink.download = name.trim()
+    aLink.href = URL.createObjectURL(blob)
+    aLink.click()
+    URL.revokeObjectURL(blob)
+  },
   _initDom: function () {
     const inner = _ => {
       return `
@@ -65,6 +78,7 @@ const gitlab = {
       `
     } 
     _qs('.projTree').insertBefore(_2dom(inner()), _qs('.projTree-switchBtn'))
+    this._initDownload()
   },
   _initCss: _ => {
     _injectCss(`
@@ -160,6 +174,10 @@ const gitlab = {
         border-right: 0;
         box-shadow: rgba(118, 118, 118, 0.11) 2px 0px 5px 0px;
       }
+      .download-icon{
+        margin-right: 2rem;
+        cursor: pointer;
+      }
     `)
   },
   _initEvent: function () {
@@ -179,6 +197,15 @@ const gitlab = {
         ul = ul ? ul : li.appendChild(this._initFileList(data)).hide()
         ul.isHide() && ul.show() || ul.hide()
       })
+    }
+    _qs('.download-icon').onclick = _ => {
+      let text
+      document.oncopy = e => {
+        text = e.clipboardData.getData('Text')
+        document.oncopy = null
+      }
+      _qs('.js-copy-blob-source-btn').click()
+      this._download(_qs('.file-title-name').txt(), text)
     }
   },
   _beforeCreate: function () {
