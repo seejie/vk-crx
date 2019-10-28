@@ -1,8 +1,10 @@
-// 创建周报 => 导入模板、预览上周周报(暂时不做)、快速标题、周报定时提醒(不在此做)
+// weekly report template
+const tempUrl = 'http://wiki.vipkid.com.cn/pages/viewpage.action?pageId=81139554'
+// last report
+const lastReportSrc = 'http://wiki.vipkid.com.cn/plugins/pagetree/naturalchildren.action?decorator=none&excerpt=false&sort=position&reverse=false&disableLinks=false&expandCurrent=true&hasRoot=true&pageId=83116350&treeId=0&startDepth=0&mobile=false&ancestors=81162001&ancestors=81139552&ancestors=83116350&treePageId='
+
+// 创建周报 => 导入模板、预览上周周报、快速标题、周报定时提醒(不在此做)
 const weeklyReport = {
-  _data: {
-    tempUrl: 'http://wiki.vipkid.com.cn/pages/viewpage.action?pageId=81139554'
-  },
   // 快速标题
   _autoCreateTitle: _ => {
     const title = _qs('#content-title')
@@ -34,30 +36,68 @@ const weeklyReport = {
     }
     toolbar.appendChild(_2dom(inner()))
   },
-  _injectDom: function () {
+  _initDom: function () {
     this._autoCreateTitle()
     this._importReportTemp()
   },
   _initEvent: function () {
     const editor = _qs('#tinymce', _qs('#wysiwygTextarea_ifr').contentWindow.document)
     _qs('#rte-button-import a').onclick = _ => {
-      _blackHole(this._data.tempUrl, (win, destroy) => {
-        editor.innerHTML = _qs('#main-content', win).innerHTML
-        destroy()
-      })
+      _wormhole(tempUrl, doc => editor.innerHTML = _qs('#main-content', doc).innerHTML)
     }
     _qs('#rte-button-view a').onclick = _ => {
-      console.log(2222, '----------')
+      const lastReport = _qs('#lastReport')
+      if (!lastReport) {
+        const topCrumb = _qs('#breadcrumbs li:nth-last-child(1)').child('a').href
+        const pageId = /=(\d+)/.exec(topCrumb)[1]
+        _wormhole(lastReportSrc + pageId, doc => {
+          const ul = _qs('.plugin_pagetree_children_list', doc)[3]
+          const li = ul.child(ul.children.length - 1)
+          const lastSrc = li.child('a').href
+          _wormhole(lastSrc, doc2 => {
+            const content = _qs('#main-content', doc2).attr('id', 'lastReport').addClass('lastReport')
+            _qs('#rte').addClass('lastReportExist')
+            _qs('#wysiwyg').appendChild(content)
+          })
+        })
+      } else {
+        const lastReportExist = _qs('#rte')
+        if (lastReport.style.display === 'none') {
+          lastReport.show()
+          lastReportExist.addClass('lastReportExist')
+        } else {
+          lastReport.hide()
+          lastReportExist.class(lastReportExist.class().replace('lastReportExist', ''))
+        }
+      }
     }
+  },
+  _initCss: _ => {
+    _injectCss(`
+      .lastReport{
+        float: right;
+        width: calc(50% - 2rem);
+        height: calc(100% - 2rem);
+        padding: 1rem;
+        background: #fafafa;
+      }
+      .lastReportExist{
+        float: left;
+        width: 50%;
+      }
+    `)
   },
   _inContext: _ => {
     return _qs('#breadcrumbs a').toArray().find(el=>el.txt().includes('周报'))
   },
   init: function () {
     if (!this._inContext()) return
-    this._injectDom()
+    this._initCss()
+    this._initDom()
     this._initEvent()
   }
 }
 
-weeklyReport.init()
+window.onload = _ => {
+  weeklyReport.init()
+}

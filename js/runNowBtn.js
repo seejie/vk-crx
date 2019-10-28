@@ -9,7 +9,7 @@ const runNowBtn = {
       return `http://${this.host}/Ins/BizSvcMethod/ExecBizSvcMethod/`
     },
   },
-  _injectDom: function (win) {
+  _initDom: function (win) {
     const inner = `
       <a id="runNow" class="btn mini purple thickbox" href="javascript:void(0)">立即运行</a>
     `
@@ -43,7 +43,7 @@ const runNowBtn = {
       iframe.onload = _ => {
         const win = iframe.contentWindow
         this._data.host = win.location.host
-        this._injectDom(win)
+        this._initDom(win)
         this._initEvent(win)
       }
     }

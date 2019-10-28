@@ -10,8 +10,8 @@ const gitlab = {
     arr.forEach(el=>{
       if (/fa-folder/.test(el.child().class())) {
         el.child('a')
-          .data('src', el.child('a').attrs('href'))
-          .attrs('href', 'javascript:void(0);')
+          .data('src', el.child('a').attr('href'))
+          .attr('href', 'javascript:void(0);')
           .child().addClass('isFolder')
       } 
       inner += `<li>${el.html()}</li>`
@@ -70,100 +70,98 @@ const gitlab = {
   },
   _initCss: _ => {
     _injectCss(`
-      <style>
-        .projTree * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-        .projTree{
-          position: fixed;
-          top: 0;
-          left: 0;
-          display: flex;
-          height: 100%;
-          background: transparent;
-          z-index: 1000000001;
-          overflow: hidden;
-          transition: left 0.5s ease 0s;
-        }
-        .projTree-wrapper{
-          height: 100%;
-          background:#fff;
-          width: 0;
-          overflow: hidden;
-          transition: width 0.3s ease-in 0s;
-        }
-        .projTree-header{
-          height: 51px;
-          background: #fafafa;
-          border-right: 1px solid #e5e5e5;
-          border-bottom: 1px solid #e5e5e5;
-          line-height: 51px;
-          padding: 0 10px !important;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .projTree-view{
-          padding: 10px;
-          height: calc(100% - 52px);
-          overflow: scroll;
-          border-right: 1px solid #e5e5e5;
-        }
-        .projTree-content{
-          width: 100%;
-          list-style: none;
-        }
-        .projTree-content .str-truncated {
-          width: 100%;
-        }
-        .projTree-content .str-truncated:hover {
-          background: #f5f5f5;
-        }
-        .projTree-content li.actived .str-truncated{
-          color: red;
-          text-decoration: underline;
-        }
-        .projTree-content .projTree-content{
-          padding-left: 22px;
-        }
-        .dotload {
-          display: inline-block;
-          width: 3ch;
-          text-indent: -1ch;
-          vertical-align: bottom;
-          overflow: hidden;
-          animation: dot 1s infinite step-start both;
-          font-family: Consolas, Monaco, monospace;
-        }
-        @keyframes dot {
-          33% { text-indent: 0; }
-          66% { text-indent: -2ch; }
-        }
-        .projTree-footer{
-          position: absolute;
-          bottom: 0;
-          width: 232px;
-          background-color: #fafafa;
-          padding: 5px 10px;
-          text-align: center;
-          border-right: 1px solid #e5e5e5;
-        }
-        .projTree-switchBtn{
-          cursor: pointer;
-          height: 100px;
-          margin: auto;
-          text-align: center;
-          transform: rotate(-180deg);
-          writing-mode: tb-rl;
-          background-color: #f2f5f7;
-          padding: 8px 0;
-          border: 1px solid #e0e4e7;
-          border-right: 0;
-          box-shadow: rgba(118, 118, 118, 0.11) 2px 0px 5px 0px;
-        }
-      </style>
+      .projTree * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .projTree{
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        height: 100%;
+        background: transparent;
+        z-index: 1000000001;
+        overflow: hidden;
+        transition: left 0.5s ease 0s;
+      }
+      .projTree-wrapper{
+        height: 100%;
+        background:#fff;
+        width: 0;
+        overflow: hidden;
+        transition: width 0.3s ease-in 0s;
+      }
+      .projTree-header{
+        height: 51px;
+        background: #fafafa;
+        border-right: 1px solid #e5e5e5;
+        border-bottom: 1px solid #e5e5e5;
+        line-height: 51px;
+        padding: 0 10px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .projTree-view{
+        padding: 10px;
+        height: calc(100% - 52px);
+        overflow: scroll;
+        border-right: 1px solid #e5e5e5;
+      }
+      .projTree-content{
+        width: 100%;
+        list-style: none;
+      }
+      .projTree-content .str-truncated {
+        width: 100%;
+      }
+      .projTree-content .str-truncated:hover {
+        background: #f5f5f5;
+      }
+      .projTree-content li.actived .str-truncated{
+        color: red;
+        text-decoration: underline;
+      }
+      .projTree-content .projTree-content{
+        padding-left: 22px;
+      }
+      .dotload {
+        display: inline-block;
+        width: 3ch;
+        text-indent: -1ch;
+        vertical-align: bottom;
+        overflow: hidden;
+        animation: dot 1s infinite step-start both;
+        font-family: Consolas, Monaco, monospace;
+      }
+      @keyframes dot {
+        33% { text-indent: 0; }
+        66% { text-indent: -2ch; }
+      }
+      .projTree-footer{
+        position: absolute;
+        bottom: 0;
+        width: 232px;
+        background-color: #fafafa;
+        padding: 5px 10px;
+        text-align: center;
+        border-right: 1px solid #e5e5e5;
+      }
+      .projTree-switchBtn{
+        cursor: pointer;
+        height: 100px;
+        margin: auto;
+        text-align: center;
+        transform: rotate(-180deg);
+        writing-mode: tb-rl;
+        background-color: #f2f5f7;
+        padding: 8px 0;
+        border: 1px solid #e0e4e7;
+        border-right: 0;
+        box-shadow: rgba(118, 118, 118, 0.11) 2px 0px 5px 0px;
+      }
     `)
   },
   _initEvent: function () {

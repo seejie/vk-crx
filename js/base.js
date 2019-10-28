@@ -1,5 +1,6 @@
 // for reuse
 const domParser = new DOMParser()
+const http = new XMLHttpRequest()
 
 // selector
 // 'this' will be lost when using arraw function
@@ -11,41 +12,32 @@ const _qs = (selector, ctx) => {
 }
 
 // html(string) format to doc node
-const _2doc = html => {
-  return domParser.parseFromString(html,'text/html')
-}
+const _2doc = html => domParser.parseFromString(html,'text/html')
 
 // dom(string) format to dom node
-const _2dom = dom => {
-  return _2doc(dom).body.children[0]
-}
+const _2dom = dom => _2doc(dom).body.children[0]
 
 // style(string) format to style node
-const _2Style = style => {
-  return _2doc(style).head
-}
+const _2Style = style => _2doc(style).head
 
 // create and insert css
-const _injectCss = style => {
-  _qs('head').appendChild(_2Style(style))
-}
+const _injectCss = style => _qs('head').appendChild(_2Style(`<style>${style}</style>`))
 
 // createElement abbr.
 const _cE = el => document.createElement(el)
 
 // ajax
 const _ajax = options => {
-  const http = new XMLHttpRequest()
-    http.open(options.type || 'GET', options.url, true)
-    http.setRequestHeader('Accept', 'application/json, text/plain, */*; charset=utf-8')
-    http.send(options.type ? options.data : null)
-    http.onreadystatechange = _ => {
-      if (http.readyState !== 4 || !/200/.test(http.status)) return
-      if (options.success) {
-        const res = options.dataType ? http.response : JSON.parse(http.response)
-        options.success(res)
-      }
+  http.open(options.type || 'GET', options.url, true)
+  http.setRequestHeader('Accept', 'application/json, text/plain, */*; charset=utf-8')
+  http.send(options.type ? options.data : null)
+  http.onreadystatechange = _ => {
+    if (http.readyState !== 4 || !/200/.test(http.status)) return
+    if (options.success) {
+      const res = options.dataType ? http.response : JSON.parse(http.response)
+      options.success(res)
     }
+  }
 }
 
 // fetch
@@ -111,10 +103,17 @@ Node.prototype.child = function (key) {
       ? 'className'
       : key[0] === '#'
         ? 'id' : 'tagName'
-    return this.children.toArray().find(el=>{
-      const reg = new RegExp(key.replace(/\.|\#/g, ''), 'i')
+    const el = this.children.toArray().find(el=>{
+      const reg = new RegExp('^' + key.replace(/\.|\#/g, '') + '$', 'i')
       return reg.test(el[attr])
     })
+    if (el) return el
+    let target
+    this.children.toArray().forEach(el=>{
+      if (target) return
+      target = el.child(key)
+    })
+    if (target) return target
   }
 }
 
@@ -124,23 +123,23 @@ Node.prototype.siblings = function (idx) {
 }
 
 // get/set attrs
-Node.prototype.attrs = function (attr, args) {
+Node.prototype.attr = function (attr, args) {
   return args ? (this[attr] = args) && this : this[attr]
 }
 
 // get/set innerHTML
 Node.prototype.html = function (args) {
-  return this.attrs('innerHTML', args)
+  return this.attr('innerHTML', args)
 }
 
 // get/set innerText
 Node.prototype.txt = function (args) {
-  return this.attrs('innerText', args)
+  return this.attr('innerText', args)
 }
 
 // get/set class name
 Node.prototype.class = function (args) {
-  return this.attrs('className', args)
+  return this.attr('className', args)
 }
 
 // add new class name
@@ -185,7 +184,7 @@ const _wormhole = (src, back) => {
 // black hole
 // build a black hole using by the 'src' and through back
 const _blackHole = (src, through) => {
-  const iframe = _cE('iframe').attrs('src', src).class('blackhole').hide()
+  const iframe = _cE('iframe').attr('src', src).class('blackhole').hide()
   document.body.appendChild(iframe)
   iframe.onload = _ => through(iframe.contentWindow.document, _ => document.body.removeChild(iframe))
 }
