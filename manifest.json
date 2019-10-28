@@ -4,6 +4,11 @@
   "manifest_version": 2,
   "description": "try to do something for better",
   "author": "liusijie@vipkid.com.cn",
+  "icons": {
+		"16": "images/logo.png",
+		"48": "images/logo.png",
+		"128": "images/logo.png"
+	},
   "browser_action": {
     "default_icon": "/images/logo.png",
     "default_title": "have a nice coding",
@@ -19,9 +24,16 @@
     "matches": ["https://code.vipkid.com.cn/*"],
     "js": ["js/base.js", "js/gitlab.js"]
   }],
-  "background":{
+  "background": {
     "scripts": ["global/background.js"]
   },
+  // cannot overrides more than one page
+  "chrome_url_overrides": {
+    // "newtab": "/page/newTab.html"
+    // "history": "/page/history.html"
+	  // "bookmarks": "/page/bookmarks.html"
+  },
+  "devtools_page": "devtools.html",
   "permissions": [
     "notifications",
     "https://github.com/"
