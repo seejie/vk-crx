@@ -52,8 +52,7 @@ const weeklyReport = {
         const pageId = /=(\d+)/.exec(topCrumb)[1]
         _wormhole(lastReportSrc + pageId, doc => {
           const ul = _qs('.plugin_pagetree_children_list', doc)[3]
-          const li = ul.child(ul.children.length - 1)
-          const lastSrc = li.child('a').href
+          const lastSrc = ul.child(ul.children.length - 1).child('a').href
           _wormhole(lastSrc, doc2 => {
             const content = _qs('#main-content', doc2).attr('id', 'lastReport').addClass('lastReport')
             _qs('#rte').addClass('lastReportExist')
@@ -62,7 +61,7 @@ const weeklyReport = {
         })
       } else {
         const lastReportExist = _qs('#rte')
-        if (lastReport.style.display === 'none') {
+        if (lastReport.isHide()) {
           lastReport.show()
           lastReportExist.addClass('lastReportExist')
         } else {
@@ -87,9 +86,7 @@ const weeklyReport = {
       }
     `)
   },
-  _inContext: _ => {
-    return _qs('#breadcrumbs a').toArray().find(el=>el.txt().includes('周报'))
-  },
+  _inContext: _ => _qs('#breadcrumbs a').toArray().find(el=>el.txt().includes('周报')),
   init: function () {
     if (!this._inContext()) return
     this._initCss()

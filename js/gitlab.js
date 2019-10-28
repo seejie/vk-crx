@@ -47,9 +47,7 @@ const gitlab = {
     const parent = _qs(`.breadcrumb > li:nth-last-child(${isLeafNode ? 2 : 3}) a`)
     return parent && parent.href
   },
-  _initData: el => {
-    return el && el.toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true))
-  },
+  _initData: el => el && el.toArray().filter(el=> el.child('i')).map(el=>el.cloneNode(true)),
   _initDom: function () {
     const inner = _ => {
       return `

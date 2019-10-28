@@ -122,9 +122,25 @@ Node.prototype.siblings = function (idx) {
   return this.parent().child(idx)
 }
 
+// abstract getters/setters
+Node.prototype.abst = function (attr, args, name) {
+  if (name) return args ? (this[name][attr] = args) && this : this[name][attr]
+  return args ? (this[attr] = args) && this : this[attr]
+}
+
 // get/set attrs
 Node.prototype.attr = function (attr, args) {
-  return args ? (this[attr] = args) && this : this[attr]
+  return this.abst(attr, args)
+}
+
+// get/set dataset
+Node.prototype.data = function (attr, args) {
+  return this.abst(attr, args, 'dataset')
+}
+
+// get/set style
+Node.prototype.css = function (attr, args) {
+  return this.abst(attr, args, 'style')
 }
 
 // get/set innerHTML
@@ -162,13 +178,9 @@ Node.prototype.show = function (type) {
   return this
 }
 
+// check display or not
 Node.prototype.isHide = function () {
   return this.style.display === 'none'
-}
-
-// dataset
-Node.prototype.data = function (attr, args) {
-  return args ? (this.dataset[attr] = args) && this : this.dataset[attr]
 }
 
 // wormhole
