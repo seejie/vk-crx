@@ -47,6 +47,7 @@ const weeklyReport = {
     }
     _qs('#rte-button-view a').onclick = _ => {
       const lastReport = _qs('#lastReport')
+      const toogle = _qs('#rte-button-view span')
       if (!lastReport) {
         const topCrumb = _qs('#breadcrumbs li:nth-last-child(1)').child('a').href
         const pageId = /=(\d+)/.exec(topCrumb)[1]
@@ -57,6 +58,7 @@ const weeklyReport = {
             const content = _qs('#main-content', doc2).attr('id', 'lastReport').addClass('lastReport')
             _qs('#rte').addClass('lastReportExist')
             _qs('#wysiwyg').appendChild(content)
+            toogle.txt('隐藏上周周报')
           })
         })
       } else {
@@ -64,9 +66,11 @@ const weeklyReport = {
         if (lastReport.isHide()) {
           lastReport.show()
           lastReportExist.addClass('lastReportExist')
+          toogle.txt('隐藏上周周报')
         } else {
           lastReport.hide()
           lastReportExist.class(lastReportExist.class().replace('lastReportExist', ''))
+          toogle.txt('预览上周周报')
         }
       }
     }
