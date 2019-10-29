@@ -185,12 +185,19 @@ Node.prototype.isHide = function () {
 
 // wormhole
 // bild a wormhole let crawler find specify content
-const _wormhole = (src, back) => {
-  _ajax({
-    url: src,
-    dataType: 'html',
-    success: res => back(_2doc(res))
+const _wormhole = src => {
+  return new Promise((resolve, reject) => {
+    _ajax({
+      url: src,
+      dataType: 'html',
+      // success: res => back(_2doc(res))
+      success: res => {
+        // console.log('res', res)
+        resolve(_2doc(res))
+      }
+    })
   })
+  
 }
 
 // black hole
