@@ -1,7 +1,12 @@
 // weekly report template
 const tempUrl = 'http://wiki.vipkid.com.cn/pages/viewpage.action?pageId=81139554'
 // last report
-const lastReportSrc = 'http://wiki.vipkid.com.cn/plugins/pagetree/naturalchildren.action?decorator=none&excerpt=false&sort=position&reverse=false&disableLinks=false&expandCurrent=true&hasRoot=true&pageId=83116350&treeId=0&startDepth=0&mobile=false&ancestors=81162001&ancestors=81139552&ancestors=83116350&treePageId='
+const lastReportSrc = (parentId, id) => {
+  return `http://wiki.vipkid.com.cn/plugins/pagetree/naturalchildren.action
+    ?decorator=none&excerpt=false&sort=position&reverse=false&disableLinks=false
+    &expandCurrent=true&hasRoot=true&pageId=83116350&treeId=0&startDepth=0&mobile=false
+    &ancestors=${parentId}&ancestors=81139552&ancestors=83116350&treePageId=${id}`
+}
 
 // 创建周报 => 导入模板、预览上周周报、快速标题、周报定时提醒(不在此做)
 const weeklyReport = {
@@ -49,17 +54,30 @@ const weeklyReport = {
       const lastReport = _qs('#lastReport')
       const toogle = _qs('#rte-button-view span')
       if (!lastReport) {
-        const topCrumb = _qs('#breadcrumbs li:nth-last-child(1)').child('a').href
-        const pageId = /=(\d+)/.exec(topCrumb)[1]
-        _wormhole(lastReportSrc + pageId, doc => {
-          const ul = _qs('.plugin_pagetree_children_list', doc)[3]
-          const lastSrc = ul.child(ul.children.length - 1).child('a').href
-          _wormhole(lastSrc, doc2 => {
-            const content = _qs('#main-content', doc2).attr('id', 'lastReport').addClass('lastReport')
-            _qs('#rte').addClass('lastReportExist')
-            _qs('#wysiwyg').appendChild(content)
-            toogle.txt('隐藏上周周报')
-          })
+        const breadcrumbs = _qs('#breadcrumbs li').toArray().reverse()
+        const pageId = /=(\d+)/.exec(breadcrumbs[0].child('a'))[1]
+        const parentPageId = /=(\d+)/.exec(breadcrumbs[1].child('a'))[1]
+        const src = lastReportSrc(parentPageId, pageId).replace(/\s/g, '')
+        
+        _wormhole(src)
+        .then(doc => {
+          // find list of pages under the current employee
+          const reports = _qs('ul ul ul ul a', doc).toArray()
+          const history = reports.find(el=>el.txt().includes('历史'))
+          console.log(history, '------history----')
+          console.log(reports[reports.length - 1], '------last----')
+          if (!history) {
+            const lastSrc = reports[reports.length - 1].href
+            _wormhole(lastSrc)
+            .then(doc2 => {
+              const content = _qs('#main-content', doc2).attr('id', 'lastReport').addClass('lastReport')
+              _qs('#rte').addClass('lastReportExist')
+              _qs('#wysiwyg').appendChild(content)
+              toogle.txt('隐藏上周周报')
+            })
+          } else {
+
+          }
         })
       } else {
         const lastReportExist = _qs('#rte')
