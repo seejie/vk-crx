@@ -190,11 +190,7 @@ const _wormhole = src => {
     _ajax({
       url: src,
       dataType: 'html',
-      // success: res => back(_2doc(res))
-      success: res => {
-        // console.log('res', res)
-        resolve(_2doc(res))
-      }
+      success: res => resolve(_2doc(res))
     })
   })
   

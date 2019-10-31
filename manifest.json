@@ -15,8 +15,11 @@
     "default_popup": "/page/popup.html"
   },
   "content_scripts": [{
-    "matches": ["http://wiki.vipkid.com.cn/pages/resumedraft.action*"],
-    "js": ["js/base.js", "js/weeklyReport.js"]
+    "matches": [
+      "http://wiki.vipkid.com.cn/pages/resumedraft.action*",
+      "http://wiki.vipkid.com.cn/pages/viewpage.action*"
+    ],
+    "js": ["js/base.js", "js/weeklyReport2.js"]
   }, {
     "matches": ["http://*.vipkid-inc.com/Sys/auth/Index"],
     "js": ["js/base.js", "js/runNowBtn.js"]
@@ -36,6 +39,7 @@
   "devtools_page": "devtools.html",
   "permissions": [
     "notifications",
+    "storage",
     "https://github.com/"
   ]
 }

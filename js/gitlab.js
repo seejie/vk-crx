@@ -31,7 +31,7 @@ const gitlab = {
       return
     } 
 
-    _wormhole(parentSrc, doc => {
+    _wormhole(parentSrc).then(doc => {
       const grandParent = _qs('.breadcrumb > li:nth-last-child(3) a', doc)
       const data = this._initData(_qs(td1st, doc))
       const elders = this._initFileList(data)
@@ -190,7 +190,7 @@ const gitlab = {
       if (!target.class().includes('isFolder')) return
       const src = target.parent('a').data('src')
 
-      _wormhole(src, doc => {
+      _wormhole(src).then(doc => {
         const data = this._initData(_qs(td1st, doc))
         const li = target.parent('li')
         let ul = li.child('ul')

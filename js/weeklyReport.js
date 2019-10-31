@@ -48,7 +48,7 @@ const weeklyReport = {
   _initEvent: function () {
     const editor = _qs('#tinymce', _qs('#wysiwygTextarea_ifr').contentWindow.document)
     _qs('#rte-button-import a').onclick = _ => {
-      _wormhole(tempUrl, doc => editor.innerHTML = _qs('#main-content', doc).innerHTML)
+      _wormhole(tempUrl).then(doc => editor.innerHTML = _qs('#main-content', doc).innerHTML)
     }
     _qs('#rte-button-view a').onclick = _ => {
       const lastReport = _qs('#lastReport')
@@ -62,10 +62,9 @@ const weeklyReport = {
         _wormhole(src)
         .then(doc => {
           // find list of pages under the current employee
-          const reports = _qs('ul ul ul ul a', doc).toArray()
+          const ul = _qs('ul', doc)
+          const reports = _qs('a', ul[ul.length - 1]).toArray()
           const history = reports.find(el=>el.txt().includes('历史'))
-          console.log(history, '------history----')
-          console.log(reports[reports.length - 1], '------last----')
           if (!history) {
             const lastSrc = reports[reports.length - 1].href
             _wormhole(lastSrc)
@@ -76,7 +75,33 @@ const weeklyReport = {
               toogle.txt('隐藏上周周报')
             })
           } else {
-
+            const grandchildId = /\d+/.exec(history.href)[0]
+            const historySrc = src.replace(/treePageId=(\d+)/.exec(src)[1], grandchildId)
+              .replace('mobile=false&', `mobile=false&ancestors=${pageId}&`)
+            
+            _wormhole(historySrc)
+            .then(doc2 => {
+              // find last mounth in history
+              const ul = _qs('ul', doc2).toArray().reverse()[0]
+              const mounthSrc = _qs('a', ul).toArray().reverse()[0].href
+              const grandgrandchildId = /\d+/.exec(mounthSrc)[0]
+              const lastWeekSrc = historySrc.replace(/treePageId=(\d+)/.exec(historySrc)[1], grandgrandchildId)
+                .replace('mobile=false&', `mobile=false&ancestors=${/treePageId=(\d+)/.exec(historySrc)[1]}&`)
+              
+              _wormhole(lastWeekSrc)
+              .then(doc3 => {
+                // find last report in mounth
+                const ul = _qs('ul', doc3).toArray().reverse()[0]
+                const reportSrc = _qs('a', ul).toArray().reverse()[0].href
+                _wormhole(reportSrc)
+                .then(doc4 => {
+                  const content = _qs('#main-content', doc4).attr('id', 'lastReport').addClass('lastReport')
+                  _qs('#rte').addClass('lastReportExist')
+                  _qs('#wysiwyg').appendChild(content)
+                  toogle.txt('隐藏上周周报')
+                })
+              })
+            })
           }
         })
       } else {
