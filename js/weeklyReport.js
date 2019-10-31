@@ -200,13 +200,13 @@ const weeklyReport = {
 
 window.onload = _ => {
   weeklyReport.init()
-  // when user press the edit btn
+  // when user press the edit button
   // from view page to edit page is not really jump to another page
-  // it is just change some dom and change location path only
+  // it is just change some doms and change location path only
   // and there is no '#'(symbol) in path 
   // so it means event 'onhashchange' its not useful in this case
-  // 
-  const observer = new MutationObserver(mutations => {
+  // observe body node for determine page was changed
+  const observer = new MutationObserver(_ => {
     if (!location.href.includes('resumedraft')) return
     weeklyReport._initDom()
     weeklyReport._initEvent()
