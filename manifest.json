@@ -11,15 +11,14 @@
 	},
   "browser_action": {
     "default_icon": "/images/logo.png",
-    "default_title": "have a nice coding",
-    "default_popup": "/page/popup.html"
+    "default_title": "have a nice coding"
   },
   "content_scripts": [{
     "matches": [
       "http://wiki.vipkid.com.cn/pages/resumedraft.action*",
       "http://wiki.vipkid.com.cn/pages/viewpage.action*"
     ],
-    "js": ["js/base.js", "js/weeklyReport2.js"]
+    "js": ["js/base.js", "js/weeklyReport.js"]
   }, {
     "matches": ["http://*.vipkid-inc.com/Sys/auth/Index"],
     "js": ["js/base.js", "js/runNowBtn.js"]
@@ -30,16 +29,8 @@
   "background": {
     "scripts": ["global/background.js"]
   },
-  // cannot overrides more than one page
-  "chrome_url_overrides": {
-    // "newtab": "/page/newTab.html"
-    // "history": "/page/history.html"
-	  // "bookmarks": "/page/bookmarks.html"
-  },
-  "devtools_page": "devtools.html",
   "permissions": [
     "notifications",
     "storage",
-    "https://github.com/"
   ]
 }
