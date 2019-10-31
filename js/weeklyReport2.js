@@ -56,7 +56,6 @@ const weeklyReport = {
         chrome.storage.local.get('lastReportRealSrc', storage => {
           console.log(storage.lastReportRealSrc, '-----a-----')        
           _wormhole(storage.lastReportRealSrc)
-          // .then(doc => editor.innerHTML = _qs('#main-content', doc).innerHTML)
           .then(doc => {
             const content = _qs('#main-content', doc).attr('id', 'lastReport').addClass('lastReport')
             _qs('#rte').addClass('lastReportExist')
