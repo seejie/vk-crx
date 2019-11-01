@@ -4,18 +4,7 @@ const currVersion = chrome.app.getDetails().version
 
 // check update
 const checkUpdate = _ => {
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", 'https://github.com/seejie/vk-crx/blob/master/manifest.json', true);
-  xhr.send();
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4 && xhr.status === 200) { 
-      const res = xhr.response
-      const version = /<\/span>(\d+\.\d+)<span class="pl-pds">/.exec(res)[1]
-      if (version > currVersion) {
-        window.open('https://github.com/seejie/vk-crx/archive/master.zip')
-      }
-    }
-  }
+ 
 }
 
 const reportNotify = _ => {

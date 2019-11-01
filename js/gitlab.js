@@ -198,6 +198,7 @@ const gitlab = {
         ul.isHide() && ul.show() || ul.hide()
       })
     }
+    if (!_qs('.download-icon')) return
     _qs('.download-icon').onclick = _ => {
       let text
       document.oncopy = e => {
