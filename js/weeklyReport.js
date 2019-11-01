@@ -206,11 +206,14 @@ window.onload = _ => {
   // and there is no '#'(symbol) in path 
   // so it means event 'onhashchange' its not useful in this case
   // observe body node for determine page was changed
-  const observer = new MutationObserver(_ => {
-    if (!location.href.includes('resumedraft')) return
-    weeklyReport._initDom()
-    weeklyReport._initEvent()
-    observer.disconnect()
-  })
-  observer.observe(_qs('body'), {childList: true})
+  const editBtn = _qs('#editPageLink')
+  if (!editBtn) return
+  editBtn.onclick = _ => {
+    const observer = new MutationObserver(_ => {
+      weeklyReport._initDom()
+      weeklyReport._initEvent()
+      observer.disconnect()
+    })
+    observer.observe(_qs('body'), {childList: true})
+  }
 }
