@@ -37,19 +37,22 @@ const reportNotify = _ => {
   }
   
   const friday = 5
-  if (new Date().getDay() === friday) {
+  const now = new Date()
+  const hour = now.getHours()
+  const minute = now.getMinutes()
+  if (now.getDay() === friday && hour < 21) {
     const clock = new Date()
-    clock.setHours(15)
-    clock.setMinutes(0)
-    clock.setSeconds(0)
-    clock.setMilliseconds(0)
-    
-    const delay = clock.getTime() - new Date().getTime()
-    if (delay < 0) return
+    if (minute < 30) {
+      clock.setMinutes(30)
+    } else {
+      clock.setMinutes(0)
+      clock.setHours(hour + 1)
+    }
+
     timer = setTimeout(_ => {
       time2WriteReport()
       clearTimeout(timer)
-    }, delay)
+    }, clock - now)
   }
 }
 
