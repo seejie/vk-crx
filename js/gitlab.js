@@ -198,7 +198,9 @@ const gitlab = {
         ul.isHide() && ul.show() || ul.hide()
       })
     }
-    _qs('.download-icon').onclick = _ => {
+    const downloadBtn = _qs('.download-icon')
+    if (!downloadBtn) return
+    downloadBtn.onclick = _ => {
       let text
       document.oncopy = e => {
         text = e.clipboardData.getData('Text')
