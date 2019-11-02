@@ -52,12 +52,6 @@ const Node2Arr = nodes => {
   return [].slice.call(nodes)
 }
 
-// not undefined && not null
-// can be '' or 0
-const nil = val => {
-  return val !== undefined && val !== null
-}
-
 // toArray
 NodeList.prototype.toArray = function () {  
   return Node2Arr(this)
@@ -66,6 +60,11 @@ NodeList.prototype.toArray = function () {
 // toArray
 HTMLCollection.prototype.toArray = function () {
   return Node2Arr(this)
+}
+
+// toArray
+Node.prototype.toArray = function () {
+  return [this]
 }
 
 // find parentNode using by

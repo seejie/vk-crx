@@ -18,7 +18,9 @@ const weeklyReport = {
     const date = new Date()
     const offset = [null, 4, 3, 2, 1, 0, 6, 5]
     date.setDate(date.getDate() + offset[date.getDay()])
-    const name = _qs('#breadcrumbs li:last-child a').txt()
+    const labels = _qs('#breadcrumbs li a').toArray()
+    const index = labels.findIndex(el=> /^0.*团队$/.test(el.txt()))
+    const name = labels[index + 1].txt()
     const input = `${name}-${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
     title.value = input
   },
@@ -44,8 +46,8 @@ const weeklyReport = {
     toolbar.appendChild(_2dom(inner()))
   },
   _initEvent: function () {
-    const editor = _qs('#tinymce', _qs('#wysiwygTextarea_ifr').contentWindow.document)
     _qs('#rte-button-import a').onclick = _ => {
+      const editor = _qs('#tinymce', _qs('#wysiwygTextarea_ifr').contentWindow.document)
       this._autoCreateTitle()
       _wormhole(tempUrl).then(doc => editor.innerHTML = _qs('#main-content', doc).innerHTML)
     }
@@ -56,8 +58,10 @@ const weeklyReport = {
         chrome.storage.local.get('lastReportRealSrc', storage => {
           _wormhole(storage.lastReportRealSrc)
           .then(doc => {
+            const title = _qs('#title-text', doc)
             const content = _qs('#main-content', doc).attr('id', 'lastReport').addClass('lastReport')
             _qs('#rte').addClass('lastReportExist')
+            content.insertBefore(title, content.child())
             _qs('#wysiwyg').appendChild(content)
             toogle.txt('隐藏上周周报')
           })
@@ -138,16 +142,20 @@ const weeklyReport = {
     const currLi = curr.parent('li')
     // create
     _qs('#quick-create-page-button').onclick = _ => {
+      const underName = curr.parent('ul').parent('li').child('span').txt().includes('团队')
+      if (underName) {
+        this._findLastMounthLastReport(0)
+        return
+      }
       const sonUl = _qs('ul', currLi)
-      const links = _qs('a', sonUl).toArray()
-      const history = links.find(el => /归档周报|周报归档|历史周报/.test(el.txt()))
+      const reports = _qs('a', sonUl)
+      const history = reports.toArray().find(el => /归档周报|周报归档|历史周报/.test(el.txt()))
       // has history reports set
       if (history) {
         this._findLastMounthLastReport(0, true)
       } else {
         // current month has report
         if (sonUl) {
-          const reports = _qs('a', sonUl)
           const reportSrc = reports.href || reports.toArray().reverse()[0].href
           chrome.storage.local.set({lastReportRealSrc: reportSrc})
         } else {
@@ -206,14 +214,10 @@ window.onload = _ => {
   // and there is no '#'(symbol) in path 
   // so it means event 'onhashchange' its not useful in this case
   // observe body node for determine page was changed
-  const editBtn = _qs('#editPageLink')
-  if (!editBtn) return
-  editBtn.onclick = _ => {
-    const observer = new MutationObserver(_ => {
-      weeklyReport._initDom()
-      weeklyReport._initEvent()
-      observer.disconnect()
-    })
-    observer.observe(_qs('body'), {childList: true})
-  }
+  const observer = new MutationObserver(_ => {
+    weeklyReport._initDom()
+    weeklyReport._initEvent()
+    observer.disconnect()
+  })
+  observer.observe(_qs('body'), {childList: true})
 }
