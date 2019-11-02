@@ -88,11 +88,9 @@ const weeklyReport = {
     const list = _qs('.plugin_pagetree_children_list')
     const groupPageId = getId(list[3])
     const employeePageId = getId(list[4])
-    let reports
-    if (hasHistoryNode) {
-      reports = list[4].children.toArray()
-    } else {
-      reports = list[4].children.toArray().filter(el => {
+    let reports = list[4].children.toArray()
+    if (!hasHistoryNode) {
+      reports = reports.filter(el => {
         const dom = el.child('span').child('a')
         return dom && /\d+年\d+月/.test(dom.txt())
       })
