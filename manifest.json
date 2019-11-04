@@ -20,9 +20,9 @@
       "http://wiki.vipkid.com.cn/pages/viewpage.action*"
     ],
     "js": ["global/base.js", "js/weeklyReport.js"]
-  }, {
-    "matches": ["http://*.vipkid-inc.com/Sys/auth/Index"],
-    "js": ["global/base.js", "js/runNowBtn.js"]
+  // }, {
+  //   "matches": ["http://*.vipkid-inc.com/Sys/auth/Index"],
+  //   "js": ["global/base.js", "js/runNowBtn.js"]
   }, {
     "matches": ["https://code.vipkid.com.cn/*"],
     "js": ["global/base.js", "js/gitlab.js"]
