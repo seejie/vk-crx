@@ -192,7 +192,6 @@ const _wormhole = src => {
       success: res => resolve(_2doc(res))
     })
   })
-  
 }
 
 // black hole
