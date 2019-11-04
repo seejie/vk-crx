@@ -1,0 +1,48 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../global/base.js"></script>
+  <script src="../js/popup.js"></script>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body{
+      height: 200px;
+      width: 200px;
+    }
+    .title {
+      text-align: center;
+      font-size: 20px;
+      padding-top: .5rem;
+    }
+    .form {
+      padding: 1rem .5rem;
+    }
+    p {
+      color: red;
+      margin: .5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="title">vipkid-crx配置</div>
+  <div class="form"> 
+    <input type="checkbox" id="weeklyReport" />
+    <label for="weeklyReport">启用周报相关功能</label>
+    <br><br>
+    <input type="checkbox" id="gitlab" />
+    <label for="gitlab">启用gitlab相关功能</label>
+    <br><br>
+    <input type="button" id="submit" value="保存">
+  </div>
+
+  <p>若影响正常使用，请关闭相应功能</p>
+  <p>若有(bug/需求/问题)请联系：<br>liusijie@vipkid.com.cn</p>
+</body>
+</html>

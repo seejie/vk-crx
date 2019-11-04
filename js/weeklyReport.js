@@ -204,7 +204,13 @@ const weeklyReport = {
   }
 }
 
+let allow
+chrome.storage.local.get('allowsWeeklyReport', storage => {
+  allow = storage.allowsWeeklyReport
+})
+
 window.onload = _ => {
+  if (!allow) return
   weeklyReport.init()
   // when user press the edit button
   // from view page to edit page is not really jump to another page
