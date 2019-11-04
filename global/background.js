@@ -1,6 +1,4 @@
 const chr = chrome
-console.log(chr, '----------')
-const currVersion = chrome.app.getDetails().version
 
 // check update
 const checkUpdate = _ => {
@@ -35,25 +33,29 @@ const reportNotify = _ => {
       clearTimeout(timer)
     })
   }
-  
-  const friday = 5
-  const now = new Date()
-  const hour = now.getHours()
-  const minute = now.getMinutes()
-  if (now.getDay() === friday && hour < 21) {
-    const clock = new Date()
-    if (minute < 30) {
-      clock.setMinutes(30)
-    } else {
-      clock.setMinutes(0)
-      clock.setHours(hour + 1)
-    }
 
-    timer = setTimeout(_ => {
-      time2WriteReport()
-      clearTimeout(timer)
-    }, clock - now)
+  const timing = time => {
+    const friday = 5
+    const now = new Date(time)
+    const hour = now.getHours()
+    const minute = now.getMinutes()
+    if (now.getDay() === friday && hour < 21) {
+      const clock = new Date(time)
+      clock.setSeconds(0)
+      if (minute < 30) {
+        clock.setMinutes(30)
+      } else {
+        clock.setMinutes(0)
+        clock.setHours(hour >= 17 ? hour + 1 : 17)
+      }
+      timer = setTimeout(_ => {
+        time2WriteReport()
+        timing(clock)
+      }, clock - now)
+    }
   }
+
+  timing(new Date())
 }
 
 
