@@ -1,10 +1,3 @@
-const chr = chrome
-
-// check update
-const checkUpdate = _ => {
-  
-}
-
 const reportNotify = _ => {
   let timer
   const time2WriteReport = _ => {
@@ -60,7 +53,6 @@ const reportNotify = _ => {
 
 
 const run = _ => {
-  checkUpdate()
   reportNotify()
 }
 

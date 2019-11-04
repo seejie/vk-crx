@@ -205,8 +205,8 @@ const weeklyReport = {
 }
 
 let allow
-chrome.storage.local.get('allowsWeeklyReport', storage => {
-  allow = storage.allowsWeeklyReport
+chrome.storage.local.get('allowWeeklyReport', storage => {
+  allow = storage.allowWeeklyReport
 })
 
 window.onload = _ => {

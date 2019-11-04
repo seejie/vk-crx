@@ -239,8 +239,8 @@ const gitlab = {
 }
 
 let allow
-chrome.storage.local.get('allowsGitlab', storage => {
-  allow = storage.allowsGitlab
+chrome.storage.local.get('allowGitlab', storage => {
+  allow = storage.allowGitlab
 })
 
 window.onload = _ => {
