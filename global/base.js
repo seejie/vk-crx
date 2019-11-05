@@ -211,3 +211,8 @@ const _blackHole = (src, through) => {
   document.body.appendChild(iframe)
   iframe.onload = _ => through(iframe.contentWindow.document, _ => document.body.removeChild(iframe))
 }
+
+// for content Script
+const _setConfig = obj => chrome.storage.local.set(obj)
+
+const _getConfig = (key, cb) => chrome.storage.local.get(null, storage => cb(storage[key]))

@@ -86,7 +86,7 @@ const findCalendars = pageNum => {
 
 const initEvent = _ => {
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.whoami === 'newTab') {
+    if (request.whoami === 'newtab') {
       sendResponse(calendarImg)
       // return true is necessary for async function
       return true
@@ -109,5 +109,3 @@ const run = _ => {
 
 // start form here
 run()
-
-
