@@ -23,12 +23,21 @@
   }, {
     "matches": ["https://code.vipkid.com.cn/*"],
     "js": ["global/base.js", "js/gitlab.js"]
+  }, {
+    "matches": ["chrome://newtab/"],
+    "js": ["js/newTab.js"]
   }],
   "background": {
     "scripts": ["global/base.js", "global/background.js"]
   },
+  "chrome_url_overrides" : {
+    "newtab": "/pages/newTab.html"
+  },
   "permissions": [
     "notifications",
-    "storage"
+    "storage",
+    "cookies",
+    "https://*/*",
+    "http://*/*"
   ]
 }

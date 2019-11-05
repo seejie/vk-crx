@@ -1,3 +1,5 @@
+let calendarImg
+// reprot notifier
 const reportNotify = _ => {
   let timer
   const time2WriteReport = _ => {
@@ -51,10 +53,61 @@ const reportNotify = _ => {
   timing(new Date())
 }
 
+// get auth from the cookie
+const getAuth = _ => {
+  return new Promise((resolve, reject) => {
+    chrome.cookies.getAll({'domain': 'vipkid-inc.com'}, function(cookies) { 
+      const auth = cookies.find(el=>el.domain === '.vipkid-inc.com' && el.name === 'VIPKIDITSYSTEMAUTHORIZATION')
+      resolve(auth)
+    })
+  })
+}
+
+// find last monthly calendar
+const findCalendars = pageNum => {
+  getAuth().then(auth => {
+    if (!auth) return
+    _ajax({
+      url: `https://api.vipkid-inc.com/portal/api/cmsDirectory/getValidCntByClmId?pageNum=${pageNum}&pageSize=5&columnId=122&pageId=1&pagePart=C2`,
+      headers: {Authorization: auth.value},
+      success: function (res){
+        const arr = res.data.list
+        const calendar = arr.find(el=>el.title.includes('台历'))
+        if (calendar) {
+          const path = calendar.contentConfigList[0].contentConfigValueList[0].text01
+          chrome.storage.local.set({calendarImg: path})
+        } else {
+          findCalendars(++pageNum)
+        }
+      }
+    })
+  })
+}
+
+const initEvent = _ => {
+  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.whoami === 'newTab') {
+      sendResponse(calendarImg)
+      // return true is necessary for async function
+      return true
+    } 
+  })
+}
 
 const run = _ => {
+  initEvent()
   reportNotify()
+  
+  chrome.storage.local.get('calendarImg', storage => {
+    if (storage.calendarImg) {
+      calendarImg = storage.calendarImg
+    } else {
+      findCalendars(1)
+    }
+  })
 }
 
 // start form here
 run()
+
+

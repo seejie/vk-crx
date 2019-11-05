@@ -30,6 +30,16 @@ const _cE = el => document.createElement(el)
 const _ajax = options => {
   http.open(options.type || 'GET', options.url, true)
   http.setRequestHeader('Accept', 'application/json, text/plain, */*; charset=utf-8')
+
+  const headers = options.headers
+  if (headers instanceof Array) {
+    options.headers.forEach(el => {
+      http.setRequestHeader(Object.keys(el)[0], Object.values(el)[0])
+    })
+  } else if (headers instanceof Object) {
+    http.setRequestHeader(Object.keys(headers)[0], Object.values(headers)[0])
+  } 
+
   http.send(options.type ? options.data : null)
   http.onreadystatechange = _ => {
     if (http.readyState !== 4 || !/200/.test(http.status)) return
