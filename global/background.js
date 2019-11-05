@@ -75,7 +75,7 @@ const findCalendars = pageNum => {
         const calendar = arr.find(el=>el.title.includes('台历'))
         if (calendar) {
           const path = calendar.contentConfigList[0].contentConfigValueList[0].text01
-          chrome.storage.local.set({calendarImg: path})
+          _setConfig({calendarImg: path})
         } else {
           findCalendars(++pageNum)
         }
@@ -97,13 +97,10 @@ const initEvent = _ => {
 const run = _ => {
   initEvent()
   reportNotify()
-  
-  chrome.storage.local.get('calendarImg', storage => {
-    if (storage.calendarImg) {
-      calendarImg = storage.calendarImg
-    } else {
-      findCalendars(1)
-    }
+
+  _getConfig('allowGitlab', val => {
+    if (!val) return findCalendars(1)
+    calendarImg = val
   })
 }
 

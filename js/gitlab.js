@@ -238,12 +238,6 @@ const gitlab = {
   }
 }
 
-let allow
-chrome.storage.local.get('allowGitlab', storage => {
-  allow = storage.allowGitlab
-})
-
 window.onload = _ => {
-  if (!allow) return
-  gitlab.init()
+  _getConfig('allowGitlab', val => val && gitlab.init())
 }

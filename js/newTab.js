@@ -9,12 +9,15 @@ const getSoup = _ => {
   })
 }
 
-chrome.runtime.sendMessage({whoami: 'newTab'}, function(res) {
-  if(!res) return 
-  _qs('body').style.backgroundImage = `url(${res})`
-  getSoup()
-})
+const setBackgroundImg = _ => {
+  chrome.runtime.sendMessage({whoami: 'newtab'}, function(res) {
+    if(!res) return 
+    _qs('body').style.backgroundImage = `url(${res})`
+    getSoup()
+  })
+}
 
+_getConfig('allowNewtab', val => val && setBackgroundImg())
 
 // duanzi
 // const today = new Date()

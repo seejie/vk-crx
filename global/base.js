@@ -213,6 +213,11 @@ const _blackHole = (src, through) => {
 }
 
 // for content Script
-const _setConfig = obj => chrome.storage.local.set(obj)
+const _setConfig = obj => {
+  if (obj instanceof Object) {
+    return chrome.storage.local.set(obj)
+  }
+  obj.forEach(el=>chrome.storage.local.set(el))
+}
 
 const _getConfig = (key, cb) => chrome.storage.local.get(null, storage => cb(storage[key]))

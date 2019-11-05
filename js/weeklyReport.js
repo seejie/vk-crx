@@ -55,8 +55,9 @@ const weeklyReport = {
       const lastReport = _qs('#lastReport')
       const toogle = _qs('#rte-button-view span')
       if (!lastReport) {
-        chrome.storage.local.get('lastReportRealSrc', storage => {
-          _wormhole(storage.lastReportRealSrc)
+        _getConfig('lastReportRealSrc', src => {
+          if (!src) return console.error('not fond')
+          _wormhole(src)
           .then(doc => {
             const title = _qs('#title-text', doc)
             const content = _qs('#main-content', doc).attr('id', 'lastReport').addClass('lastReport')
@@ -104,7 +105,7 @@ const weeklyReport = {
     .then(doc => {
       const lastUl = _qs('ul', doc).toArray().reverse()[0]
       const reportSrc = _qs('a', lastUl).toArray().reverse()[0].href
-      chrome.storage.local.set({lastReportRealSrc: reportSrc})
+      _setConfig({lastReportRealSrc: reportSrc})
       if (!hasHistoryNode) return
 
       // if has history node need more times
@@ -115,7 +116,7 @@ const weeklyReport = {
       .then(doc2 => {
         const lastUl2 = _qs('ul', doc2).toArray().reverse()[0]
         const reportSrc2 = _qs('a', lastUl2).toArray().reverse()[0].href
-        chrome.storage.local.set({lastReportRealSrc: reportSrc2})
+        _setConfig({lastReportRealSrc: reportSrc2})
       })
     })
   },
@@ -155,7 +156,7 @@ const weeklyReport = {
         // current month has report
         if (sonUl) {
           const reportSrc = reports.href || reports.toArray().reverse()[0].href
-          chrome.storage.local.set({lastReportRealSrc: reportSrc})
+          _setConfig({lastReportRealSrc: reportSrc})
         } else {
           const fatherUl = currLi.parent('ul')
           if (fatherUl.childElementCount <= 1) return
@@ -186,7 +187,7 @@ const weeklyReport = {
         } else{
           const closestBro = brothers[currIndex - 1]
           const reportSrc = _qs('a', closestBro).href
-          chrome.storage.local.set({lastReportRealSrc: reportSrc})
+          _setConfig({lastReportRealSrc: reportSrc})
         } 
       } 
     }
@@ -204,24 +205,22 @@ const weeklyReport = {
   }
 }
 
-let allow
-chrome.storage.local.get('allowWeeklyReport', storage => {
-  allow = storage.allowWeeklyReport
-})
-
 window.onload = _ => {
-  if (!allow) return
-  weeklyReport.init()
-  // when user press the edit button
-  // from view page to edit page is not really jump to another page
-  // it is just change some doms and change location path only
-  // and there is no '#'(symbol) in path 
-  // so it means event 'onhashchange' its not useful in this case
-  // observe body node for determine page was changed
-  const observer = new MutationObserver(_ => {
-    weeklyReport._initDom()
-    weeklyReport._initEvent()
-    observer.disconnect()
+  _getConfig('allowWeeklyReport', val => {
+    if (!val) return
+    weeklyReport.init()
+ 
+    // when user press the edit button
+    // from view page to edit page is not really jump to another page
+    // it is just change some doms and change location path only
+    // and there is no '#'(symbol) in path 
+    // so it means event 'onhashchange' its not useful in this case
+    // observe body node for determine page was changed
+    const observer = new MutationObserver(_ => {
+      weeklyReport._initDom()
+      weeklyReport._initEvent()
+      observer.disconnect()
+    })
+    observer.observe(_qs('body'), {childList: true})
   })
-  observer.observe(_qs('body'), {childList: true})
 }
