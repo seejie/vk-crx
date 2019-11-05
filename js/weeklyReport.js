@@ -90,7 +90,7 @@ const weeklyReport = {
     const groupPageId = getId(list[3])
     const employeePageId = getId(list[4])
     let reports = list[4].children.toArray()
-    if (!hasHistoryNode) {
+    if (hasHistoryNode) {
       reports = reports.filter(el => {
         const dom = el.child('span').child('a')
         return dom && /\d+年\d+月/.test(dom.txt())
