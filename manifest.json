@@ -27,9 +27,11 @@
   "background": {
     "scripts": ["global/base.js", "global/background.js"]
   },
+  "options_page": "pages/options.html",
   "permissions": [
     "notifications",
     "storage",
     "cookies"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
 }
