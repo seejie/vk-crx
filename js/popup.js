@@ -17,14 +17,14 @@ document.addEventListener('DOMContentLoaded', _ => {
   _qs('#submit').onclick = _ => {
     _setConfig({allowWeeklyReport: $report.checked})
     _setConfig({allowGitlab: $gitlab.checked})
-    _setConfig({allowNewtab: $newtab.checked})
+    // _setConfig({allowNewtab: $newtab.checked})
     notify()
   }
 
   chrome.storage.local.get(null, storage => {
     $report.checked = storage.allowWeeklyReport === undefined ? true : storage.allowWeeklyReport
     $gitlab.checked = storage.allowGitlab === undefined ? true : storage.allowGitlab
-    $newtab.checked = storage.allowNewtab === undefined ? true : storage.allowNewtab
+    // $newtab.checked = storage.allowNewtab === undefined ? true : storage.allowNewtab
   })
 })
 

@@ -10,9 +10,9 @@
 		"128": "images/logo.png"
 	},
   "browser_action": {
-    "default_icon": "/images/logo.png",
+    "default_icon": "images/logo.png",
     "default_title": "have a nice coding",
-    "default_popup": "/pages/popup.html"
+    "default_popup": "pages/popup.html"
   },
   "content_scripts": [{
     "matches": [
@@ -23,9 +23,6 @@
   }, {
     "matches": ["https://code.vipkid.com.cn/*"],
     "js": ["global/base.js", "js/gitlab.js"]
-  }, {
-    "matches": ["chrome://newtab/"],
-    "js": ["js/newtab.js"]
   }],
   "background": {
     "scripts": ["global/base.js", "global/background.js"]
@@ -33,8 +30,6 @@
   "permissions": [
     "notifications",
     "storage",
-    "cookies",
-    "https://*/*",
-    "http://*/*"
+    "cookies"
   ]
 }

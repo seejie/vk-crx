@@ -56,7 +56,7 @@ const reportNotify = _ => {
 // get auth from the cookie
 const getAuth = _ => {
   return new Promise((resolve, reject) => {
-    chrome.cookies.getAll({'domain': 'vipkid-inc.com'}, function(cookies) { 
+    chrome.cookies.getAll({domain: 'vipkid-inc.com'}, function(cookies) { 
       const auth = cookies.find(el=>el.domain === '.vipkid-inc.com' && el.name === 'VIPKIDITSYSTEMAUTHORIZATION')
       resolve(auth)
     })
@@ -70,7 +70,7 @@ const findCalendars = pageNum => {
     _ajax({
       url: `https://api.vipkid-inc.com/portal/api/cmsDirectory/getValidCntByClmId?pageNum=${pageNum}&pageSize=5&columnId=122&pageId=1&pagePart=C2`,
       headers: {Authorization: auth.value},
-      success: function (res){
+      success: function (res) {
         const arr = res.data.list
         const calendar = arr.find(el=>el.title.includes('台历'))
         if (calendar) {
@@ -97,7 +97,6 @@ const initEvent = _ => {
 const run = _ => {
   initEvent()
   reportNotify()
-
   _getConfig('allowGitlab', val => {
     if (!val) return findCalendars(1)
     calendarImg = val
