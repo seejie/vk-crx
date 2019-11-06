@@ -84,13 +84,26 @@ const findCalendars = pageNum => {
   })
 }
 
+// notify
+const notify = msg => {
+  chrome.notifications.create(null, {
+    type: 'basic',
+    iconUrl: 'images/logo.png',
+    title: '提示',
+    message: msg
+  })
+}
+
 const initEvent = _ => {
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.whoami === 'newtab') {
-      sendResponse(calendarImg)
-      // return true is necessary for async function
-      return true
-    } 
+    const [whoami, params] = request.whoami.split(':')
+    switch (whoami) {
+      case 'newtab': 
+        // return true is necessary for async function
+        return !sendResponse(calendarImg)
+      case 'notify':
+        return notify(params)
+    }
   })
 }
 

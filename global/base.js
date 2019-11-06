@@ -213,11 +213,9 @@ const _blackHole = (src, through) => {
 }
 
 // for content Script
-const _setConfig = obj => {
-  if (obj instanceof Object) {
-    return chrome.storage.local.set(obj)
-  }
-  obj.forEach(el=>chrome.storage.local.set(el))
-}
+const _setConfig = obj => chrome.storage.local.set(obj)
 
 const _getConfig = (key, cb) => chrome.storage.local.get(null, storage => cb(storage[key]))
+
+// notify
+const _notify = msg => chrome.runtime.sendMessage({whoami: `notify:${msg}`})

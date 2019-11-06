@@ -43,11 +43,13 @@ const weeklyReport = {
         </ul>
       `
     }
+    if (_qs('#rte-button-import', toolbar)) return
     toolbar.appendChild(_2dom(inner()))
   },
   _initEvent: function () {
     _qs('#rte-button-import a').onclick = _ => {
       const editor = _qs('#tinymce', _qs('#wysiwygTextarea_ifr').contentWindow.document)
+      if (/[\u4E00-\u9FA5]/.test(editor.innerHTML)) return _notify('文档内容不为空，不可导入')
       this._autoCreateTitle()
       _wormhole(tempUrl).then(doc => editor.innerHTML = _qs('#main-content', doc).innerHTML)
     }

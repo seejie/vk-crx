@@ -1,13 +1,3 @@
-// notify
-const notify = _ => {
-  chrome.notifications.create(null, {
-    type: 'basic',
-    iconUrl: '../images/logo.png',
-    title: 'ヾ(◍°∇°◍)ﾉﾞ',
-    message: '修改成功，刷新后生效！'
-  })
-}
-
 // all config
 document.addEventListener('DOMContentLoaded', _ => {
   const $report = _qs('#weeklyReport')
@@ -15,10 +5,12 @@ document.addEventListener('DOMContentLoaded', _ => {
   const $newtab = _qs('#newtab')
 
   _qs('#submit').onclick = _ => {
-    _setConfig({allowWeeklyReport: $report.checked})
-    _setConfig({allowGitlab: $gitlab.checked})
-    // _setConfig({allowNewtab: $newtab.checked})
-    notify()
+    _setConfig({
+      allowWeeklyReport: $report.checked,
+      allowGitlab: $gitlab.checked
+      // allowNewtab: $newtab.checked
+    })
+    _notify('修改成功，刷新后生效！')
   }
 
   chrome.storage.local.get(null, storage => {
