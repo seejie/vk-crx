@@ -1,4 +1,12 @@
 let calendarImg
+// check version
+const checkVersion = _ => {
+  // todo
+  // chrome.browserAction.setBadgeText({text: 'New'});
+  // chrome.browserAction.setBadgeBackgroundColor({color: [255, 0, 0, 255]});
+  // chrome.browserAction.setBadgeText({text: ''});
+	// chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
+}
 // reprot notifier
 const reportNotify = _ => {
   let timer
@@ -132,6 +140,7 @@ const initEvent = _ => {
 
 // start form here
 const run = (_ => {
+  checkVersion()
   initEvent()
   reportNotify()
   _getConfig('allowGitlab', val => {

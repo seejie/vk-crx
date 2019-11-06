@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', _ => {
     _notify('修改成功，刷新后生效！')
   }
 
+  // todo
   chrome.storage.local.get(null, storage => {
     $report.checked = storage.allowWeeklyReport === undefined ? true : storage.allowWeeklyReport
     $gitlab.checked = storage.allowGitlab === undefined ? true : storage.allowGitlab
