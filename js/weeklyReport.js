@@ -219,10 +219,39 @@ window.onload = _ => {
     // so it means event 'onhashchange' its not useful in this case
     // observe body node for determine page was changed
     const observer = new MutationObserver(_ => {
-      weeklyReport._initDom()
-      weeklyReport._initEvent()
-      observer.disconnect()
+      document.addEventListener('click', e => {
+        if (!e.target.txt().includes('编辑')) return
+        weeklyReport._initDom()
+        weeklyReport._initEvent()
+        observer.disconnect()
+      })
     })
     observer.observe(_qs('body'), {childList: true})
+    if (!location.href.includes('resumedraft')) return
+    chrome.runtime.sendMessage({whoami: 'contMenus'})
   })
 }
+
+// insert new list
+chrome.runtime.onMessage.addListener(function(message) {
+  const [position, content] = message.split(':')
+  const editor = _qs('#tinymce', _qs('iframe').contentWindow.document)
+  const target = [].slice.call(_qs('li', editor)).find(el=> el.firstChild && el.firstChild.textContent.includes(content))
+  if (!target) return
+  const current = target.nodeType === 3 ? target.parentNode : target
+  const father = current.parentNode
+  const index = [].slice.call(father.children).findIndex(el=>el === current)
+  const nextBro = father.children[index + 1]
+
+  if (position === '上') {
+    father.insertBefore(_cE('li'), current)
+  } else if (position === '下') {
+    nextBro && father.insertBefore(_cE('li'), nextBro) || father.appendChild(_cE('li')) 
+  } else if(position === '后') {
+    const child = _qs('ol', current)
+    if (child) return child.appendChild(_cE('li'))
+    const ol = _cE('ol')
+    ol.appendChild(_cE('li'))
+    current.appendChild(ol)
+  }
+})

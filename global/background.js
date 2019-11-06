@@ -94,6 +94,27 @@ const notify = msg => {
   })
 }
 
+// contextMenus
+const initContextMenus = _ => {
+  const createMenus = key => {
+    return chrome.contextMenus.create({
+      title: `向${key}插入一行`, 
+      contexts: ['selection'], 
+      onclick: function({pageUrl, selectionText}){
+        chrome.tabs.query({url: pageUrl}, function (tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, `${key}:${selectionText}`)
+        })
+      }
+    })
+  }
+  chrome.contextMenus.removeAll(function(){
+    createMenus("上")
+    createMenus("下")
+    createMenus("后")
+  })
+}
+
+// event center
 const initEvent = _ => {
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     const [whoami, params] = request.whoami.split(':')
@@ -103,18 +124,18 @@ const initEvent = _ => {
         return !sendResponse(calendarImg)
       case 'notify':
         return notify(params)
+      case 'contMenus':
+        return initContextMenus()
     }
   })
 }
 
-const run = _ => {
+// start form here
+const run = (_ => {
   initEvent()
   reportNotify()
   _getConfig('allowGitlab', val => {
     if (!val) return findCalendars(1)
     calendarImg = val
   })
-}
-
-// start form here
-run()
+})()

@@ -31,7 +31,9 @@
   "permissions": [
     "notifications",
     "storage",
-    "cookies"
+    "cookies",
+    "contextMenus",
+    "tabs"
   ],
   "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
 }
