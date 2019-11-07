@@ -6,10 +6,9 @@
 chrome.tabs.executeScript(null, {file: "content_script.js"})
 ```
 
-2. 检测更新提示
-3. options
-4. devtool
-5. ...
+2. options
+3. devtool
+4. ...
 
 
 
