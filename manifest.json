@@ -34,7 +34,10 @@
     "storage",
     "cookies",
     "contextMenus",
-    "tabs"
+    "tabs",
+    "tts",
+    "http://*/*",
+    "https://*/"
   ],
   "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
 }

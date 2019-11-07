@@ -13,25 +13,30 @@
       box-sizing: border-box;
     }
     html, body{
-      height: 200px;
+      height: 160px;
       width: 200px;
     }
     .title {
       text-align: center;
       font-size: 20px;
-      padding-top: .5rem;
+      padding: .5rem;
     }
     .form {
-      padding: 1rem .5rem;
+      padding: .5rem .75rem;
     }
     p {
       color: red;
-      margin: .5rem;
+      margin: .5rem .75rem;
+      font-size: 10px;
+    }
+    #newV {
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="title">vipkid-crx配置</div>
+  <p id="newV">* 检测到新版本，请到扩展程序页更新</p>
   <div class="form"> 
     <input type="checkbox" id="weeklyReport" />
     <label for="weeklyReport">启用周报相关功能</label>
@@ -45,7 +50,10 @@
     <input type="button" id="submit" value="保存">
   </div>
 
-  <p>若影响正常使用，请关闭相应功能</p>
-  <p>若有(bug/需求/问题/建议)请联系:<br>liusijie@vipkid.com.cn</p>
+  <p>
+    若影响正常使用，请关闭相应功能<br>
+    若有(bug/需求/问题/建议)请联系:<br>
+    liusijie@vipkid.com.cn
+  </p>
 </body>
 </html>

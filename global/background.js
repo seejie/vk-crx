@@ -1,11 +1,21 @@
+// todo
 let calendarImg
 // check version
 const checkVersion = _ => {
-  // todo
-  // chrome.browserAction.setBadgeText({text: 'New'});
-  // chrome.browserAction.setBadgeBackgroundColor({color: [255, 0, 0, 255]});
-  // chrome.browserAction.setBadgeText({text: ''});
-	// chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
+  const url = 'https://code.vipkid.com.cn/liusijie/vk-chrome-extension/raw/master/manifest.json'
+  _wormhole(url).then(doc => {
+    const remoteV = JSON.parse(_qs('body', doc).innerText).version
+    const currV = chrome.runtime.getManifest().version
+    if (remoteV === currV) {
+      chrome.browserAction.setBadgeText({text: ''})
+      chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]})
+      _setConfig({newV: false})
+    } else {
+      chrome.browserAction.setBadgeText({text: 'New!'})
+      chrome.browserAction.setBadgeBackgroundColor({color: [255, 0, 0, 255]})
+      _setConfig({newV: true})
+    }
+  })
 }
 // reprot notifier
 const reportNotify = _ => {
