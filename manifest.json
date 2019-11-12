@@ -35,8 +35,6 @@
     "cookies",
     "contextMenus",
     "tabs",
-    "tts",
     "https://code.vipkid.com.cn/*"
-  ],
-  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
+  ]
 }

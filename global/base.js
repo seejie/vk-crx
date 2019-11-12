@@ -219,3 +219,26 @@ const _getConfig = (key, cb) => chrome.storage.sync.get(null, storage => cb(key 
 
 // notify
 const _notify = msg => chrome.runtime.sendMessage({whoami: `notify:${msg}`})
+
+// statistics
+const statistics = _ => {
+  const ga = document.createElement('script') 
+  ga.type = 'text/javascript' 
+  ga.async = true
+  // <script type="text/javascript" src="https://s9.cnzz.com/z_stat.php?id=1278198027&web_id=1278198027"></script>
+  ga.src = 'https://www.googletagmanager.com/gtag/js?id=UA-151671350-1'
+  const s = document.getElementsByTagName('script')[0] 
+  s.parentNode.insertBefore(ga, s)
+}
+
+// 
+const reportData = _ => {
+  console.log(1111, '----------')
+  window.dataLayer = window.dataLayer || []
+  function gtag () {
+    dataLayer.push(arguments)
+  }
+
+  gtag('js', new Date())
+  gtag('config', 'UA-151671350-1')
+}
