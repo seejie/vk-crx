@@ -9,6 +9,8 @@ chrome.tabs.executeScript(null, {file: "content_script.js"})
 2. options
 3. devtool
 4. ...
+5. 流量统计
+6. 错误监控
 
 
 

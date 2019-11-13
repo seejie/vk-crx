@@ -23,7 +23,7 @@ const reportNotify = _ => {
   const time2WriteReport = _ => {
     chrome.notifications.create(null, {
       type: 'basic',
-      iconUrl: 'images/logo.png',
+      iconUrl: 'logo.png',
       title: 'ヾ(◍°∇°◍)ﾉﾞ',
       message: '工作辛苦了，今天是周五，记得写周报哦！',
       buttons: [{
@@ -49,6 +49,7 @@ const reportNotify = _ => {
 
   const timing = time => {
     const friday = 5
+    const fiveClock = 17
     const now = new Date(time)
     const hour = now.getHours()
     const minute = now.getMinutes()
@@ -59,7 +60,7 @@ const reportNotify = _ => {
         clock.setMinutes(30)
       } else {
         clock.setMinutes(0)
-        clock.setHours(hour >= 17 ? hour + 1 : 17)
+        clock.setHours(hour >= fiveClock ? hour + 1 : fiveClock)
       }
       timer = setTimeout(_ => {
         time2WriteReport()
@@ -106,7 +107,7 @@ const findCalendars = pageNum => {
 const notify = msg => {
   chrome.notifications.create(null, {
     type: 'basic',
-    iconUrl: 'images/logo.png',
+    iconUrl: 'logo.png',
     title: '提示',
     message: msg
   })

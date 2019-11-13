@@ -233,7 +233,6 @@ const statistics = _ => {
 
 // 
 const reportData = _ => {
-  console.log(1111, '----------')
   window.dataLayer = window.dataLayer || []
   function gtag () {
     dataLayer.push(arguments)
