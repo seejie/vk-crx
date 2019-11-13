@@ -167,9 +167,9 @@ Node.prototype.class = function (args) {
   return this.attr('className', args)
 }
 
-// add new class name
+// add new class name 
 Node.prototype.addClass = function (name) {
-  return (this.class(`${this.class()} ${name}`)) && this
+  return (this.classList.add(name)) || this
 }
 
 // hide
