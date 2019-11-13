@@ -212,13 +212,20 @@ const _blackHole = (src, through) => {
   iframe.onload = _ => through(iframe.contentWindow.document, _ => document.body.removeChild(iframe))
 }
 
-// for content Script
+// set data to storage
 const _setConfig = obj => chrome.storage.sync.set(obj)
 
-const _getConfig = (key, cb) => chrome.storage.sync.get(null, storage => cb(key ? storage[key]: storage))
+// get data from storage
+const _getConfig = (key, cb) => {
+  _callBackground({whoami: 'checkV'})
+  chrome.storage.sync.get(null, storage => cb(key ? storage[key]: storage))
+}
+
+// send message to background
+const _callBackground = params => chrome.runtime.sendMessage(params)
 
 // notify
-const _notify = msg => chrome.runtime.sendMessage({whoami: `notify:${msg}`})
+const _notify = msg => _callBackground({whoami: `notify:${msg}`})
 
 // statistics
 const statistics = _ => {

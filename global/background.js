@@ -145,6 +145,8 @@ const initEvent = _ => {
         return notify(params)
       case 'contMenus':
         return initContextMenus()
+      case 'checkV':
+        return checkVersion()
     }
   })
 }

@@ -228,7 +228,7 @@ window.onload = _ => {
     })
     observer.observe(_qs('body'), {childList: true})
     if (!location.href.includes('resumedraft')) return
-    chrome.runtime.sendMessage({whoami: 'contMenus'})
+    _callBackground({whoami: 'contMenus'})
   })
 }
 

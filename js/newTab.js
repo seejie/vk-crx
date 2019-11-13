@@ -10,7 +10,7 @@ const getSoup = _ => {
 }
 
 const setBackgroundImg = _ => {
-  chrome.runtime.sendMessage({whoami: 'newtab'}, function(res) {
+  _callBackground({whoami: 'newtab'}, function(res) {
     if(!res) return 
     _qs('body').style.backgroundImage = `url(${res})`
     getSoup()
