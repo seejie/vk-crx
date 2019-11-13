@@ -35,6 +35,7 @@
     "cookies",
     "contextMenus",
     "tabs",
-    "https://code.vipkid.com.cn/*"
+    "https://code.vipkid.com.cn/*",
+    "management"
   ]
 }

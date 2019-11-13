@@ -17,6 +17,7 @@ const checkVersion = _ => {
     }
   })
 }
+
 // reprot notifier
 const reportNotify = _ => {
   let timer

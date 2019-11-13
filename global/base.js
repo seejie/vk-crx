@@ -1,7 +1,3 @@
-// for reuse
-const domParser = new DOMParser()
-const http = new XMLHttpRequest()
-
 // selector
 // 'this' will be lost when using arraw function
 const _qs = (selector, ctx) => {
@@ -12,7 +8,7 @@ const _qs = (selector, ctx) => {
 }
 
 // html(string) format to doc node
-const _2doc = html => domParser.parseFromString(html,'text/html')
+const _2doc = html => new DOMParser().parseFromString(html,'text/html')
 
 // dom(string) format to dom node
 const _2dom = dom => _2doc(dom).body.children[0]
@@ -28,6 +24,7 @@ const _cE = el => document.createElement(el)
 
 // ajax
 const _ajax = options => {
+  const http = new XMLHttpRequest()
   http.open(options.type || 'GET', options.url, true)
   http.setRequestHeader('Accept', 'application/json, text/plain, */*; charset=utf-8')
 
