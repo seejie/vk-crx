@@ -25,7 +25,7 @@
     "js": ["global/base.js", "js/gitlab.js"]
   }],
   "background": {
-    "scripts": ["global/base.js", "global/background.js"]
+    "scripts": ["global/base.js", "global/background.js", "global/hotReload.js"]
   },
   "options_page": "pages/options.html",
   "devtools_page": "pages/devtools.html",

@@ -162,3 +162,6 @@ const run = (_ => {
     calendarImg = val
   })
 })()
+
+// todo checkeck active status
+// chrome.browserAction.setIcon({path: {'19': 'logo2.png'}})
