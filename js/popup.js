@@ -28,8 +28,9 @@ document.addEventListener('DOMContentLoaded', _ => {
   _qs('#stopUsing').onclick = _ => {
     chrome.management.getAll(function(extensions){
       const vipkid = extensions.find(el => el.name === chrome.app.getDetails().name).id
-      chrome.management.setEnabled(vipkid, false)
+      chrome.management.setEnabled(vipkid, false, _ => {
+        chrome.management.setEnabled(vipkid, true)
+      })
     })
   }
 })
-
