@@ -22,7 +22,7 @@ function fillterCurrDom () {
   }
   const obj = {}
   for (let attr in $0) {
-    if ($0[attr] && typeof $0[attr] !== 'function') {
+    if ($0[attr] !== null && typeof $0[attr] !== 'function') {
       obj[attr] = $0[attr]
     }
   }

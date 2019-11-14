@@ -30,6 +30,7 @@ chrome.tabs.executeScript(null, {file: "content_script.js"})
 |            | 启用gitlab相关功能   | 1.0.1 |
 |            | 新版检测             | 1.0.3 |
 |            | 配置信息云同步        | 1.0.4 |
+|            | 停用当前扩展程序      | 1.0.5 |
 |开发者工具    | 当前节点有效属性      | 1.0.4 |
 
 
