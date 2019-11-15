@@ -25,12 +25,20 @@ document.addEventListener('DOMContentLoaded', _ => {
     _qs('#newV').style.display = storage.newV ? 'block' : 'none'
   })
 
+  // stop using crx
   _qs('#stopUsing').onclick = _ => {
     chrome.management.getAll(function(extensions){
       const vipkid = extensions.find(el => el.name === chrome.app.getDetails().name).id
       chrome.management.setEnabled(vipkid, false, _ => {
         chrome.management.setEnabled(vipkid, true)
       })
+    })
+  }
+
+  // update crx
+  _qs('#update').onclick = _ => {
+    chrome.tabs.create({
+      url: 'chrome://extensions?options=' + chrome.runtime.id
     })
   }
 })

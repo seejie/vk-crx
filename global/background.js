@@ -106,11 +106,14 @@ const findCalendars = pageNum => {
 
 // notify
 const notify = msg => {
-  chrome.notifications.create(null, {
-    type: 'basic',
-    iconUrl: 'logo.png',
-    title: '提示',
-    message: msg
+  const notifyId = 'notify'
+  chrome.notifications.clear(notifyId, _ => {
+    chrome.notifications.create(notifyId, {
+      type: 'basic',
+      iconUrl: 'logo.png',
+      title: '提示',
+      message: msg
+    })
   })
 }
 
