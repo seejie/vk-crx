@@ -1,27 +1,28 @@
 // weekly report template
-const tempUrl = 'http://wiki.vipkid.com.cn/pages/viewpage.action?pageId=81139554'
+const tempUrl = bool => bool 
+  ? 'http://wiki.vipkid.com.cn/pages/viewpage.action?pageId=76445016' 
+  : 'http://wiki.vipkid.com.cn/pages/viewpage.action?pageId=81139554'
+  
 // api for search last report
-const lastReportSrc = (idChain, id) => {
-  const imcPageId = '83116350'
-  const reprotPageId = '81139552'
+const lastReportSrc = (idChain, id, isQa) => {
+  const groupPageId = isQa ? '4195397' : '83116350'
+  const reprotPageId = isQa ? '4195562' : '81139552'
   return `http://wiki.vipkid.com.cn/plugins/pagetree/naturalchildren.action
     ?decorator=none&excerpt=false&sort=position&reverse=false&disableLinks=false
-    &expandCurrent=true&hasRoot=true&pageId=83116350&treeId=0&startDepth=0&mobile=false
-    &${idChain}&ancestors=${reprotPageId}&ancestors=${imcPageId}&treePageId=${id}`
+    &expandCurrent=true&hasRoot=true&pageId=${groupPageId}&treeId=0&startDepth=0&mobile=false
+    &${idChain}&ancestors=${reprotPageId}&ancestors=${groupPageId}&treePageId=${id}`
 }
 
 // 创建周报 => 导入模板、预览上周周报、快速标题、周报定时提醒(不在此做)
 const weeklyReport = {
   // auto create title
-  _autoCreateTitle: _ => {
+  _autoCreateTitle: function () {
     const title = _qs('#content-title')
+    if (this._isTesterGroup()) return title.value = this._currUserName() + ' ' + _qs('#breadcrumbs a').toArray().reverse()[0].txt().replace(/[\u4E00-\u9FA5]*/, '')
     const date = new Date()
     const offset = [null, 4, 3, 2, 1, 0, 6, 5]
     date.setDate(date.getDate() + offset[date.getDay()])
-    const labels = _qs('#breadcrumbs li a').toArray()
-    const index = labels.findIndex(el=> /^0.*团队$/.test(el.txt()))
-    const name = labels[index + 1].txt()
-    const input = `${name}-${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+    const input = `${this._currUserName()}-${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
     title.value = input
   },
   // import template && preview of report
@@ -51,7 +52,7 @@ const weeklyReport = {
       const editor = _qs('#tinymce', _qs('#wysiwygTextarea_ifr').contentWindow.document)
       if (/[\u4E00-\u9FA5]/.test(editor.innerHTML)) return _notify('文档内容不为空，不可导入')
       this._autoCreateTitle()
-      _wormhole(tempUrl).then(doc => editor.innerHTML = _qs('#main-content', doc).innerHTML)
+      _wormhole(tempUrl(this._isTesterGroup())).then(doc => editor.innerHTML = _qs('#main-content', doc).innerHTML)
     }
     _qs('#rte-button-view a').onclick = _ => {
       const lastReport = _qs('#lastReport')
@@ -122,6 +123,39 @@ const weeklyReport = {
       })
     })
   },
+  _findLastMounthLastReport_Qa: function (index, dayIdx, bool) {
+    const getId = el => el.attr('id').replace(/\D+/, '').replace(/-\d+/, '')
+    const list = _qs('.plugin_pagetree_children_list')
+    let reports = index ? list[6].children.toArray() : list[5].children.toArray()
+    const closestBro = dayIdx === undefined 
+      ? reports[index - 1].children[2]
+      : reports[dayIdx].children[2]
+
+    const dayPageId = getId(closestBro)
+    const idChain = `ancestors=${getId(list[5])}&ancestors=${getId(list[4])}&ancestors=${getId(list[3])}`
+    const src = lastReportSrc(bool ? idChain : `ancestors=${getId(list[6])}&` + idChain, dayPageId, true).replace(/\s/g, '')
+
+    _wormhole(src)
+    .then(doc => {
+      const lastUl = _qs('ul', doc).toArray().reverse()[0]
+      if (dayIdx === undefined ) {
+        const reportSrc = _qs('a', lastUl).toArray().find(el=>el.innerText.includes(this._currUserName())).href
+        _setConfig({lastReportRealSrc: reportSrc})
+      } else {
+        const reportSrc = _qs('a', lastUl).toArray().reverse()[0].href
+
+        const relReportSrc = src.replace(/treePageId=(\d+)/.exec(src)[1], /\d+/.exec(reportSrc)[0])
+        .replace('mobile=false&', `mobile=false&ancestors=${/treePageId=(\d+)/.exec(src)[1]}&`)
+
+        _wormhole(relReportSrc)
+        .then(doc2 => {
+          const lastUl2 = _qs('ul', doc2).toArray().reverse()[0]
+          const reportSrc2 = _qs('a', lastUl2).toArray().reverse()[0].href
+          _setConfig({lastReportRealSrc: reportSrc2})
+        })
+      }
+    })
+  },
   _initCss: _ => {
     _injectCss(`
       .lastReport{
@@ -143,6 +177,18 @@ const weeklyReport = {
     const currLi = curr.parent('li')
     // create
     _qs('#quick-create-page-button').onclick = _ => {
+      if (this._isTesterGroup()) {
+        const index = currLi.parent('ul').children.toArray().findIndex(el=>el === currLi)
+        if (index) {
+          this._findLastMounthLastReport_Qa(index)
+        } else {
+          const month = currLi.parent('ul').parent('li')
+          const monthIdx = month.parent('ul').children.toArray().findIndex(el=>el === month)
+          if (!monthIdx) return
+          this._findLastMounthLastReport_Qa(index, monthIdx - 1)
+        }
+        return
+      }
       const underName = curr.parent('ul').parent('li').child('span').txt().includes('团队')
       if (underName) {
         this._findLastMounthLastReport(0)
@@ -166,8 +212,22 @@ const weeklyReport = {
         }
       }
     }
+
     // edit
     _qs('#editPageLink').onclick = _ => {
+      if (this._isTesterGroup()) {
+        const currFather = currLi.parent('li')
+        const index = currFather.parent('ul').children.toArray().findIndex(el=>el === currFather)
+        if (index) {
+          this._findLastMounthLastReport_Qa(index)
+        } else {
+          const month = currFather.parent('ul').parent('li')
+          const monthIdx = month.parent('ul').children.toArray().findIndex(el=>el === month)
+          if (!monthIdx) return
+          this._findLastMounthLastReport_Qa(index, monthIdx - 1, true)
+        }
+        return
+      }
       const fatherUl = currLi.parent('ul')
       if (fatherUl.childElementCount < 1) return
       // current month hasn't report
@@ -194,6 +254,9 @@ const weeklyReport = {
       } 
     }
   },
+  _isTesterGroup: _ => _qs('#breadcrumbs a').toArray().find(el=>el.txt().includes('测试组')),
+  // _currUserName: _ => /[\u4E00-\u9FA5]*/.exec(_qs('[name=ajs-current-user-fullname]').content)[0],
+  _currUserName: _ => '马青青',
   _inContext: _ => _qs('#breadcrumbs a').toArray().find(el=>el.txt().includes('周报')),
   init: function () {
     if (!this._inContext()) return
