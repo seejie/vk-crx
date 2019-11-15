@@ -255,8 +255,7 @@ const weeklyReport = {
     }
   },
   _isTesterGroup: _ => _qs('#breadcrumbs a').toArray().find(el=>el.txt().includes('测试组')),
-  // _currUserName: _ => /[\u4E00-\u9FA5]*/.exec(_qs('[name=ajs-current-user-fullname]').content)[0],
-  _currUserName: _ => '马青青',
+  _currUserName: _ => /[\u4E00-\u9FA5]*/.exec(_qs('[name=ajs-current-user-fullname]').content)[0],
   _inContext: _ => _qs('#breadcrumbs a').toArray().find(el=>el.txt().includes('周报')),
   init: function () {
     if (!this._inContext()) return
