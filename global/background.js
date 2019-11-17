@@ -157,14 +157,16 @@ const initEvent = _ => {
 
 // checkeck active status
 const checkActive = _ => {
-  chrome.tabs.onActiveChanged.addListener(function(){
+  const activeToggle = _ => {
     chrome.tabs.query({currentWindow: true, active: true}, function(tab){
       const currTab = tab[0].url
       const scripts = chrome.runtime.getManifest().content_scripts.map(el=>el.matches).flat()
       const exist = scripts.find(el=>new RegExp(el).test(currTab))
       chrome.browserAction.setIcon({path: {'19': exist ? 'logo3.png' : 'logo2.png'}})
     })
-  })
+  }
+  chrome.tabs.onActiveChanged.addListener(activeToggle)
+  chrome.tabs.onUpdated.addListener((id, info) => info.status === 'complete' && activeToggle())
 }
 
 // start form here
@@ -192,5 +194,4 @@ chrome.runtime.requestUpdateCheck(function (d){
 
 // todo 
 // chrome.management.launchApp(string id, function callback)
-
 
