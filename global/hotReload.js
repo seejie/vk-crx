@@ -27,12 +27,3 @@ const reload = _ => chrome.tabs.query ({active: true, currentWindow: true}, tabs
   tabs[0] && chrome.tabs.reload(tabs[0].id) 
   chrome.runtime.reload()
 })
-
-
-// todo update
-chrome.runtime.onUpdateAvailable.addListener(function(e){
-  chrome.runtime.reload()
-})
-
-// todo
-// chrome.management.launchApp(string id, function callback)

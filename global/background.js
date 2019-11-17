@@ -155,6 +155,18 @@ const initEvent = _ => {
   })
 }
 
+// checkeck active status
+const checkActive = _ => {
+  chrome.tabs.onActiveChanged.addListener(function(){
+    chrome.tabs.query({currentWindow: true, active: true}, function(tab){
+      const currTab = tab[0].url
+      const scripts = chrome.runtime.getManifest().content_scripts.map(el=>el.matches).flat()
+      const exist = scripts.find(el=>new RegExp(el).test(currTab))
+      chrome.browserAction.setIcon({path: {'19': exist ? 'logo3.png' : 'logo2.png'}})
+    })
+  })
+}
+
 // start form here
 const run = (_ => {
   checkVersion()
@@ -164,7 +176,21 @@ const run = (_ => {
     if (!val) return findCalendars(1)
     calendarImg = val
   })
+  checkActive()
 })()
 
-// todo checkeck active status
-// chrome.browserAction.setIcon({path: {'19': 'logo2.png'}})
+// todo update
+chrome.runtime.onUpdateAvailable.addListener(function(e){
+  console.log(e, '-----e-----')
+  // chrome.runtime.reload()
+})
+
+// todo update
+chrome.runtime.requestUpdateCheck(function (d){
+  console.log(d, '-----d-----')
+})
+
+// todo 
+// chrome.management.launchApp(string id, function callback)
+
+
