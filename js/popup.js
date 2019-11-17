@@ -36,9 +36,8 @@ document.addEventListener('DOMContentLoaded', _ => {
   }
 
   // update crx
-  _qs('#update').onclick = _ => {
-    chrome.tabs.create({
-      url: 'chrome://extensions?options=' + chrome.runtime.id
-    })
-  }
+  _qs('#update').onclick = _ => chrome.tabs.create({url: 'chrome://extensions?id=' + chrome.runtime.id})
+
+  // more config
+  _qs('#more').onclick = _ => chrome.tabs.create({url: 'chrome-extension://' + chrome.runtime.id + '/pages/options.html'})
 })

@@ -4,10 +4,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>选项配置</title>
+  <script src="../global/base.js"></script>
+  <script src="../js/options.js"></script>
   <script src="../js/experiment.js"></script>
 </head>
 <body>
-  <!-- todo -->
-  coming soon...
+  <div id="info">
+    <p>电源：{{charging}}</p>
+    <p>电量：{{percent}}</p>
+    <p>网络：{{network}}</p>
+    <p>操作系统：{{os}}</p>
+  </div>
+
+  <div id="config">
+    星期：
+    <input type="radio" id="Thursday" name="date"/>
+    <label for="Thursday">周四</label>
+    <input type="radio" id="Friday" name="date" checked/>
+    <label for="Friday">周五</label>
+    <br>
+    频率：
+    <input type="radio" id="minute30" name="frequency" checked/>
+    <label for="minute30">30分钟</label>
+    <input type="radio" id="minute60" name="frequency"/>
+    <label for="minute60">60分钟</label>
+  </div>
+
+  <div id="todo">
+
+  </div>
 </body>
 </html>
