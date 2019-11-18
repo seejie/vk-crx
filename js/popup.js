@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', _ => {
     _setConfig({
       allowWeeklyReport: $report.checked,
       allowGitlab: $gitlab.checked,
-      // allowNewtab: $newtab.checked
+      allowNewtab: $newtab.checked
     })
     _notify('修改成功，刷新后生效！')
   }
@@ -16,11 +16,11 @@ document.addEventListener('DOMContentLoaded', _ => {
   _getConfig(null, storage => {
     $report.checked = storage.allowWeeklyReport === undefined ? true : storage.allowWeeklyReport
     $gitlab.checked = storage.allowGitlab === undefined ? true : storage.allowGitlab
-    // $newtab.checked = storage.allowNewtab === undefined ? true : storage.allowNewtab
+    $newtab.checked = storage.allowNewtab 
     _setConfig({
       allowWeeklyReport: $report.checked,
       allowGitlab: $gitlab.checked,
-      // allowNewtab: $newtab.checked
+      allowNewtab: $newtab.checked
     })
     _qs('#newV').style.display = storage.newV ? 'block' : 'none'
   })
@@ -29,9 +29,7 @@ document.addEventListener('DOMContentLoaded', _ => {
   _qs('#stopUsing').onclick = _ => {
     chrome.management.getAll(function(extensions){
       const vipkid = extensions.find(el => el.name === chrome.app.getDetails().name).id
-      chrome.management.setEnabled(vipkid, false, _ => {
-        chrome.management.setEnabled(vipkid, true)
-      })
+      chrome.management.setEnabled(vipkid, false)
     })
   }
 

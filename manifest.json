@@ -1,6 +1,6 @@
 {
   "name": "vipkid",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "manifest_version": 2,
   "description": "enjoy your time",
   "author": "liusijie@vipkid.com.cn",
@@ -36,6 +36,7 @@
     "contextMenus",
     "tabs",
     "https://code.vipkid.com.cn/*",
-    "management"
+    "management",
+    "*://*/*"
   ]
 }

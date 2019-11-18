@@ -1,20 +1,12 @@
-// todo
-let calendarImg
 // check version
 const checkVersion = _ => {
   const url = 'https://code.vipkid.com.cn/liusijie/vk-chrome-extension/raw/master/manifest.json'
   _wormhole(url).then(doc => {
     const remoteV = JSON.parse(_qs('body', doc).innerText).version
     const currV = chrome.runtime.getManifest().version
-    if (remoteV === currV) {
-      chrome.browserAction.setBadgeText({text: ''})
-      chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]})
-      _setConfig({newV: false})
-    } else {
-      chrome.browserAction.setBadgeText({text: 'New!'})
-      chrome.browserAction.setBadgeBackgroundColor({color: [255, 0, 0, 255]})
-      _setConfig({newV: true})
-    }
+    chrome.browserAction.setBadgeText({text: remoteV === currV ? '' : 'New!'})
+    chrome.browserAction.setBadgeBackgroundColor({color: remoteV === currV ? [0, 0, 0, 0] : [255, 0, 0, 255]})
+    _setConfig({newV: remoteV !== currV})
   })
 }
 
@@ -96,6 +88,7 @@ const findCalendars = pageNum => {
         if (calendar) {
           const path = calendar.contentConfigList[0].contentConfigValueList[0].text01
           _setConfig({calendarImg: path})
+          _callBackground({whoami: `newtab:${path}`})
         } else {
           findCalendars(++pageNum)
         }
@@ -139,12 +132,9 @@ const initContextMenus = _ => {
 
 // event center
 const initEvent = _ => {
-  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  chrome.runtime.onMessage.addListener(function(request) {
     const [whoami, params] = request.whoami.split(':')
     switch (whoami) {
-      case 'newtab': 
-        // return true is necessary for async function
-        return !sendResponse(calendarImg)
       case 'notify':
         return notify(params)
       case 'contMenus':
@@ -169,16 +159,30 @@ const checkActive = _ => {
   chrome.tabs.onUpdated.addListener((id, info) => info.status === 'complete' && activeToggle())
 }
 
+// new tab
+const newtab = _ => {
+  const defaultUrl = 'chrome://newtab/'
+  const overrideUrl = chrome.runtime.getURL('/pages/newtab.html')
+  chrome.tabs.onCreated.addListener(function(){
+    chrome.tabs.query({active: true, currentWindow: true}, function(info) {
+      if (info[0].url !== defaultUrl) return
+      _getConfig(null, ({allowNewtab, calendarImg}) => {
+        const url = allowNewtab ? overrideUrl : defaultUrl
+        if (!allowNewtab) return
+        chrome.tabs.update(info[0].id, {url})
+        !calendarImg && findCalendars(1)
+      })
+    })
+  })
+}
+
 // start form here
 const run = (_ => {
   checkVersion()
   initEvent()
   reportNotify()
-  _getConfig('allowGitlab', val => {
-    if (!val) return findCalendars(1)
-    calendarImg = val
-  })
-  checkActive()
+  // checkActive()
+  newtab()
 })()
 
 // todo update
@@ -194,4 +198,3 @@ chrome.runtime.requestUpdateCheck(function (d){
 
 // todo 
 // chrome.management.launchApp(string id, function callback)
-

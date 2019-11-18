@@ -219,7 +219,7 @@ const _getConfig = (key, cb) => {
 }
 
 // send message to background
-const _callBackground = params => chrome.runtime.sendMessage(params)
+const _callBackground = (params, cb) => chrome.runtime.sendMessage(params, cb)
 
 // notify
 const _notify = msg => _callBackground({whoami: `notify:${msg}`})

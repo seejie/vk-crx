@@ -1,11 +1,6 @@
 # TODO
 
 1. 定制化，动态插入脚本
-
-```
-chrome.tabs.executeScript(null, {file: "content_script.js"})
-```
-
 2. options
 3. devtool
 4. ...
@@ -31,6 +26,9 @@ chrome.tabs.executeScript(null, {file: "content_script.js"})
 |            | 新版检测             | 1.0.3 |
 |            | 配置信息云同步        | 1.0.4 |
 |            | 停用当前扩展程序      | 1.0.5 |
+|            | 手动更新             | 1.0.6 |
+|            | 更多细节配置          | 1.0.6 |
+|            | 启用新标签页          | 1.0.6 |
 |开发者工具    | 当前节点有效属性      | 1.0.4 |
 
 

@@ -10,14 +10,20 @@ const getSoup = _ => {
 }
 
 const setBackgroundImg = _ => {
-  _callBackground({whoami: 'newtab'}, function(res) {
-    if(!res) return 
-    _qs('body').style.backgroundImage = `url(${res})`
+  _getConfig('calendarImg', src => {
+    _qs('body').style.backgroundImage = `url(${src})`
     getSoup()
   })
 }
 
-_getConfig('allowNewtab', val => val && setBackgroundImg())
+setBackgroundImg()
+
+chrome.runtime.onMessage.addListener(function(request) {
+  const [whoami, ...src] = request.whoami.split(':')
+  if (whoami !== 'newtab') return
+  _qs('body').style.backgroundImage = `url(${src.join(':')})`
+  getSoup()
+})
 
 // duanzi
 // const today = new Date()
