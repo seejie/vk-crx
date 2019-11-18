@@ -210,19 +210,28 @@ const _blackHole = (src, through) => {
 }
 
 // set data to storage
-const _setConfig = obj => chrome.storage.sync.set(obj)
+const _setConfig = (obj, cb) => chrome.storage.sync.set(obj, cb)
 
 // get data from storage
 const _getConfig = (key, cb) => {
-  _callBackground({whoami: 'checkV'})
+  _sendMsg({whoami: 'checkV'})
   chrome.storage.sync.get(null, storage => cb(key ? storage[key]: storage))
 }
 
 // send message to background
-const _callBackground = (params, cb) => chrome.runtime.sendMessage(params, cb)
+const _sendMsg = (params, cb) => chrome.runtime.sendMessage(params, cb)
+
+// sned message to tab
+const _sendMsg2tab = (id, msg) => chrome.tabs.sendMessage(id, msg)
 
 // notify
-const _notify = msg => _callBackground({whoami: `notify:${msg}`})
+const _notify = msg => _sendMsg({whoami: `notify:${msg}`})
+
+// query tab
+const _queryTab = (obj, cb) => chrome.tabs.query(obj || {active: true, currentWindow: true}, cb)
+
+// runtime message listener
+const _runtimeMsg = cb => chrome.runtime.onMessage.addListener(cb)
 
 // statistics
 const statistics = _ => {

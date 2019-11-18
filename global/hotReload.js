@@ -23,7 +23,7 @@ const filesInDirectory = dir => new Promise(resolve =>
 const timestampForFilesInDirectory = dir =>
   filesInDirectory(dir).then(files => files.map(f => f.name + f.lastModifiedDate).join())
 
-const reload = _ => chrome.tabs.query ({active: true, currentWindow: true}, tabs => {
+const reload = _ => _queryTab(null, tabs => {
   tabs[0] && chrome.tabs.reload(tabs[0].id) 
   chrome.runtime.reload()
 })

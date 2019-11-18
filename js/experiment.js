@@ -1,20 +1,19 @@
 document.addEventListener('DOMContentLoaded', _ => {
-  const info = _qs('#info')
   // battery
   navigator.getBattery().then(function(battery) {
     console.log("Battery charging? " + (battery.charging ? "Yes" : "No"))
     console.log("Battery level: " + battery.level * 100 + "%")
-    info.txt(info.txt().replace('{{charging}}', battery.charging ? '充电中' : '已断开'))
-    info.txt(info.txt().replace('{{percent}}', battery.level * 100 + "%"))
+    _qs('#charging').txt(battery.charging ? '充电中' : '已断开')
+    _qs('#percent').txt(battery.level * 100 + "%")
 
     battery.addEventListener('chargingchange', function() {
       console.log("Battery charging? " + (battery.charging ? "Yes" : "No"))
-      info.txt(info.txt().replace('{{charging}}', battery.charging ? '充电中' : '已断开'))
+      _qs('#charging').txt(battery.charging ? '充电中' : '已断开')
     })
 
     battery.addEventListener('levelchange', function() {
       console.log("Battery level: " + battery.level * 100 + "%")
-      info.txt(info.txt().replace('{{percent}}', battery.level * 100 + "%"))
+      _qs('#percent').txt(battery.level * 100 + "%")
     })
 
     battery.addEventListener('chargingtimechange', function() {
@@ -29,19 +28,19 @@ document.addEventListener('DOMContentLoaded', _ => {
 
   // online offline
   ;(function(){
-    info.txt(info.txt().replace('{{network}}', navigator.onLine ? '已连接' : '已断开'))
+    _qs('#network').txt(navigator.onLine ? '已连接' : '已断开')
     window.addEventListener('offline', function(e) { 
       console.log('offline') 
-      info.txt(info.txt().replace('{{network}}', '已断开'))
+      _qs('#network').txt('已断开')
     })
     window.addEventListener('online', function(e) {
       console.log('online') 
-      info.txt(info.txt().replace('{{network}}', '已连接'))
+      _qs('#network').txt('已连接')
     })
   }())
 
   chrome.runtime.getPlatformInfo(function(platform){
-    info.txt(info.txt().replace('{{os}}', platform.os))
+    _qs('#os').txt(platform.os)
   })
   
 // new CookieCache()

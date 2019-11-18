@@ -21,22 +21,29 @@
       font-size: 20px;
       padding: .5rem;
     }
+    .title span {
+      font-size: 12px;
+    }
     .form {
       padding: .5rem .75rem;
     }
     p {
-      color: red;
-      margin: .5rem .75rem;
+      padding: .5rem .75rem;
       font-size: 12px;
     }
     #newV {
       text-align: center;
     }
+    label {
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <div class="title">vipkid-crx配置</div>
-  <p id="newV">* 检测到新版本，请到 chrome://extensions/ 更新</p>
+  <div class="title">
+    vipkid-crx配置<span id="version"></span>
+  </div>
+  <p id="newV" style="color:red;">* 检测到新版本，请更新</p>
   <div class="form"> 
     <input type="checkbox" id="weeklyReport" />
     <label for="weeklyReport">启用周报相关功能</label>
@@ -48,12 +55,12 @@
     <label for="newtab">启用dino台历为新标签页</label>
     <br><br>
     <input type="button" id="submit" value="保存">
-    <input type="button" id="stopUsing" value="停用">
-    <input type="button" id="update" value="更新">
     <input type="button" id="more" value="更多">
+    <input type="button" id="stopUsing" value="停用">
+    <input type="button" id="update" value="更新" style="color:red;">
   </div>
 
-  <p>
+  <p style="background: #f1f1f1; color:#666;">
     若影响正常使用，请关闭相应功能<br>
     若有(bug/需求/问题/建议)请联系:<br>
     liusijie@vipkid.com.cn

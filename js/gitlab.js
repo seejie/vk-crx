@@ -241,3 +241,17 @@ const gitlab = {
 window.onload = _ => {
   _getConfig('allowGitlab', val => val && gitlab.init())
 }
+
+_runtimeMsg(function(bool) {
+  const exit = _qs('.projTree-switchBtn')
+  const downloadBtn = _qs('.download-icon')
+  if (!bool && exit) {
+    exit.hide()
+    downloadBtn.hide()
+  } else if (bool && !exit){
+    gitlab.init()
+  } else if (bool && exit) {
+    exit.show()
+    downloadBtn.show()
+  }
+})

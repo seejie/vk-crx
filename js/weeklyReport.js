@@ -30,7 +30,7 @@ const weeklyReport = {
     const toolbar = _qs('.aui-toolbar2-primary.toolbar-primary')
     const inner = _ => {
       return`
-        <ul class="aui-buttons rte-toolbar-group-task-lists">
+        <ul class="aui-buttons rte-toolbar-group-task-lists" id="extBar">
           <li class="toolbar-item aui-button aui-button-subtle" id="rte-button-import">
           <a class="toolbar-trigger" href="#" data-control-id="import">
             <span>导入模板</span>
@@ -290,12 +290,24 @@ window.onload = _ => {
     })
     observer.observe(_qs('body'), {childList: true})
     if (!location.href.includes('resumedraft')) return
-    _callBackground({whoami: 'contMenus'})
+    _sendMsg({whoami: 'contMenus'})
   })
 }
 
+const toogleActive = bool => {
+  const exit = _qs('#extBar')
+  if (!bool && exit) {
+    exit.hide()
+  } else if (bool && !exit){
+    weeklyReport.init()
+  } else if (bool && exit) {
+    exit.show()
+  }
+}
+
 // insert new list
-chrome.runtime.onMessage.addListener(function(message) {
+_runtimeMsg(function(message) {
+  if (typeof message === 'boolean') return toogleActive(message)
   const [position, content] = message.split(':')
   const editor = _qs('#tinymce', _qs('iframe').contentWindow.document)
   const target = [].slice.call(_qs('li', editor)).find(el=> el.firstChild && el.firstChild.textContent.includes(content))
