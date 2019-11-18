@@ -7,31 +7,64 @@
   <script src="../global/base.js"></script>
   <script src="../js/options.js"></script>
   <script src="../js/experiment.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      padding: 1rem;
+    }
+    h3 {
+      padding: .5rem 0;
+    }
+    br{
+      height: .5rem;
+    }
+    #config{
+      line-height: 1.5;
+    }
+    #config label{
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <div id="info">
-    <p>电源：{{charging}}</p>
-    <p>电量：{{percent}}</p>
-    <p>网络：{{network}}</p>
-    <p>操作系统：{{os}}</p>
+  <div style="display: none;">
+    <h3>基础信息</h3>
+    <div id="info">
+      <p>电源：<span id="charging"></span></p>
+      <p>电量：<span id="percent"></span></p>
+      <p>网络：<span id="network"></span></p>
+      <p>操作系统：<span id="os"></span></p>
+    </div>
   </div>
-
+  <h3>周报配置</h3>
   <div id="config">
     星期：
-    <input type="radio" id="Thursday" name="date"/>
-    <label for="Thursday">周四</label>
-    <input type="radio" id="Friday" name="date" checked/>
-    <label for="Friday">周五</label>
+    <input type="radio" id="week4" name="week"/>
+    <label for="week4">周四</label>
+    <input type="radio" id="week5" name="week" checked/>
+    <label for="week5">周五</label>
     <br>
     频率：
-    <input type="radio" id="minute30" name="frequency" checked/>
-    <label for="minute30">30分钟</label>
-    <input type="radio" id="minute60" name="frequency"/>
-    <label for="minute60">60分钟</label>
+    <input type="radio" id="freq30" name="freq" checked/>
+    <label for="freq30">30分钟</label>
+    <input type="radio" id="freq60" name="freq"/>
+    <label for="freq60">60分钟</label>
+    <br>
+    定时：
+    <input type="radio" id="clock16" name="clock"/>
+    <label for="clock16">4pm</label>
+    <input type="radio" id="clock17" name="clock" checked/>
+    <label for="clock17">5pm</label>
+    <br>
+    <input type="button" id="submit" value="保存">
   </div>
 
-  <div id="todo">
+  <!-- <div id="todo">
 
-  </div>
+  </div> -->
 </body>
 </html>
