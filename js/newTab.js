@@ -16,22 +16,24 @@ const setBackgroundImg = _ => {
   })
 }
 
-setBackgroundImg()
+const duanzi = _ => {
+  const today = new Date()
+  _ajax({
+    url: `http://www.dutangapp.cn/u/toxic?date=${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`,
+    success: function (res) {
+      console.log(res, '----------')
+      _qs('#soup_cn').txt(res.note)
+      _qs('#soup_en').txt(res.content)
+    }
+  })
+}
 
-chrome.runtime.onMessage.addListener(function(request) {
+_runtimeMsg(function(request) {
   const [whoami, ...src] = request.whoami.split(':')
   if (whoami !== 'newtab') return
   _qs('body').style.backgroundImage = `url(${src.join(':')})`
   getSoup()
+  // duanzi()
 })
 
-// duanzi
-// const today = new Date()
-// _ajax({
-//   url: `http://www.dutangapp.cn/u/toxic?date=${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`,
-//   success: function (res) {
-//     console.log(res, '----------')
-//     // _qs('#soup_cn').txt(res.note)
-//     // _qs('#soup_en').txt(res.content)
-//   }
-// })
+setBackgroundImg()
