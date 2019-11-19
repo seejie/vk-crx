@@ -5,7 +5,7 @@ panels.create('vipkid', 'logo.png', '/pages/devPanel.html', function(panel){
 	// console.log(111, '----123------')
 })
 
-elPanel.createSidebarPane("attrs", function(sidebar) {
+elPanel.createSidebarPane("Attrs", function(sidebar) {
   elPanel.onSelectionChanged.addListener(function() {
     sidebar.setExpression('(' + fillterCurrDom.toString() + ')()', 'current node valid attributes')
     // sidebar.setExpression('$0')
