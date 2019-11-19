@@ -10,55 +10,57 @@ const checkVersion = _ => {
   })
 }
 
+let reportTimer
 // reprot notifier
-const reportNotify = _ => {
-  let timer
+const reportNotify = ({week, freq, clock}) => {
+  if (new Date().getDay() !== week) return
   const time2WriteReport = _ => {
-    chrome.notifications.create(null, {
-      type: 'basic',
-      iconUrl: 'logo.png',
-      title: 'ヾ(◍°∇°◍)ﾉﾞ',
-      message: '工作辛苦了，今天是周五，记得写周报哦！',
-      buttons: [{
-        title: '30分钟后再提示'
-      },{
-        title: '60分钟后再提示'
-      }]
-    })
-    chrome.notifications.onClicked.addListener(_ => {
-      window.open('http://wiki.vipkid.com.cn/pages/viewpage.action?pageId=81141120')
-    })
-    chrome.notifications.onButtonClicked.addListener((id, index) => {
-      const time = index ? 60 : 30
-      clearTimeout(timer)
-      timer = setTimeout(_ => {
-        time2WriteReport()
-      }, time * 60 * 1000)
-    })
-    chrome.notifications.onClosed.addListener(_ => {
-      clearTimeout(timer)
+    const notifyId = 'reportNotify'
+    chrome.notifications.clear(notifyId, _ => {
+      chrome.notifications.create(notifyId, {
+        type: 'basic',
+        iconUrl: 'logo.png',
+        title: 'ヾ(◍°∇°◍)ﾉﾞ',
+        message: '工作辛苦了，今天是周五，记得写周报哦！',
+        buttons: [{
+          title: '30分钟后再提示'
+        },{
+          title: '60分钟后再提示'
+        }]
+      })
+      chrome.notifications.onClicked.addListener(_ => {
+        window.open('http://wiki.vipkid.com.cn/pages/viewpage.action?pageId=81141120')
+      })
+      chrome.notifications.onButtonClicked.addListener((id, index) => {
+        const time = index ? 60 : 30
+        clearTimeout(reportTimer)
+        reportTimer = setTimeout(time2WriteReport, time * 60 * 1000)
+      })
+      chrome.notifications.onClosed.addListener(_ => {
+        clearTimeout(reportTimer)
+      })
     })
   }
 
   const timing = time => {
-    const friday = 5
-    const fiveClock = 17
     const now = new Date(time)
     const hour = now.getHours()
     const minute = now.getMinutes()
-    if (now.getDay() === friday && hour < 21) {
-      const clock = new Date(time)
-      clock.setSeconds(0)
+    if (now.getDay() === week && hour < 21) {
+      const timer = new Date(time)
+      timer.setSeconds(0)
       if (minute < 30) {
-        clock.setMinutes(30)
+        timer.setMinutes(30)
       } else {
-        clock.setMinutes(0)
-        clock.setHours(hour >= fiveClock ? hour + 1 : fiveClock)
+        timer.setMinutes(0)
+        timer.setHours(hour >= clock ? hour + 1 : clock)
       }
-      timer = setTimeout(_ => {
+      
+      reportTimer = setTimeout(_ => {
         time2WriteReport()
-        timing(clock)
-      }, clock - now)
+        timer.setMinutes(timer.getMinutes(freq - 1))
+        timing(timer)
+      }, timer - now)
     }
   }
 
@@ -88,7 +90,7 @@ const findCalendars = pageNum => {
         if (calendar) {
           const path = calendar.contentConfigList[0].contentConfigValueList[0].text01
           _setConfig({calendarImg: path})
-          _callBackground({whoami: `newtab:${path}`})
+          _sendMsg({whoami: `newtab:${path}`})
         } else {
           findCalendars(++pageNum)
         }
@@ -117,9 +119,7 @@ const initContextMenus = _ => {
       title: `向${key}插入一行`, 
       contexts: ['selection'], 
       onclick: function({pageUrl, selectionText}){
-        chrome.tabs.query({url: pageUrl}, function (tabs) {
-          chrome.tabs.sendMessage(tabs[0].id, `${key}:${selectionText}`)
-        })
+        _queryTab({url: pageUrl}, tabs => _sendMsg2tab(tabs[0].id, `${key}:${selectionText}`))
       }
     })
   }
@@ -130,9 +130,9 @@ const initContextMenus = _ => {
   })
 }
 
-// event center
-const initEvent = _ => {
-  chrome.runtime.onMessage.addListener(function(request) {
+// message hub
+const messageHub = _ => {
+  _runtimeMsg(function(request) {
     const [whoami, params] = request.whoami.split(':')
     switch (whoami) {
       case 'notify':
@@ -145,10 +145,39 @@ const initEvent = _ => {
   })
 }
 
+// distribute tasks
+const storageHub = _ => {
+  chrome.storage.onChanged.addListener(function(changes){
+    const keys = Object.keys(changes)
+    keys.includes('reportConfig') && reportNotify(changes.reportConfig.newValue)
+    keys.includes('newV') && _sendMsg({whoami: `popup:${changes.newV.newValue}`})
+    keys.includes('allowWeeklyReport') && handleStatusChanged(changes.allowWeeklyReport.newValue)
+    keys.includes('allowGitlab') && handleStatusChanged(changes.allowGitlab.newValue)
+    keys.includes('allowNewtab') && newTabStatusChanged(changes.allowNewtab.newValue)
+  })
+}
+
+// event hub
+const eventHub = _ => {
+  // todo update
+  chrome.runtime.onUpdateAvailable.addListener(function(e){
+    console.log(e, '-----e-----')
+    // chrome.runtime.reload()
+  })
+
+  // todo update
+  chrome.runtime.requestUpdateCheck(function (d){
+    console.log(d, '-----d-----')
+  })
+
+  // todo 
+  // chrome.management.launchApp(string id, function callback)
+}
+
 // checkeck active status
 const checkActive = _ => {
   const activeToggle = _ => {
-    chrome.tabs.query({currentWindow: true, active: true}, function(tab){
+    _queryTab(null, tab => {
       const currTab = tab[0].url
       const scripts = chrome.runtime.getManifest().content_scripts.map(el=>el.matches).flat()
       const exist = scripts.find(el=>new RegExp(el).test(currTab))
@@ -164,7 +193,7 @@ const newtab = _ => {
   const defaultUrl = 'chrome://newtab/'
   const overrideUrl = chrome.runtime.getURL('/pages/newtab.html')
   chrome.tabs.onCreated.addListener(function(){
-    chrome.tabs.query({active: true, currentWindow: true}, function(info) {
+    _queryTab(null, function(info) {
       if (info[0].url !== defaultUrl) return
       _getConfig(null, ({allowNewtab, calendarImg}) => {
         const url = allowNewtab ? overrideUrl : defaultUrl
@@ -176,25 +205,43 @@ const newtab = _ => {
   })
 }
 
+// newTabStatusChanged
+const newTabStatusChanged = bool => {
+  _queryTab(null, info => {
+    const tab = info[0]
+    const newtab = ['chrome://newtab/', chrome.runtime.getURL('/pages/newtab.html')]
+    if (!newtab.includes(tab.url)) return
+    chrome.tabs.update(tab.id, {url: newtab[+bool]})
+  })
+}
+
+// reportStatusChanged、gitlabStatusChanged
+const handleStatusChanged = val => _queryTab(null, info => _sendMsg2tab(info[0].id, val))
+
+let globalTimer 
+const initReportNotify = _ => {
+  _getConfig('reportConfig', info => {
+    if (info) return reportNotify(info)
+    _setConfig({
+      reportConfig: {
+        week: 5,
+        freq: 30,
+        clock: 17
+      }
+    })
+  })
+  clearTimeout(globalTimer)
+  globalTimer = setTimeout(initReportNotify, 24 * 3600 * 1000)
+}
+
 // start form here
 const run = (_ => {
   checkVersion()
-  initEvent()
-  reportNotify()
+  messageHub()
+  storageHub()
+  // eventHub()
+  initReportNotify()
   // checkActive()
   newtab()
 })()
 
-// todo update
-chrome.runtime.onUpdateAvailable.addListener(function(e){
-  console.log(e, '-----e-----')
-  // chrome.runtime.reload()
-})
-
-// todo update
-chrome.runtime.requestUpdateCheck(function (d){
-  console.log(d, '-----d-----')
-})
-
-// todo 
-// chrome.management.launchApp(string id, function callback)
